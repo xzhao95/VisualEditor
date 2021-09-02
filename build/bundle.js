@@ -31,17 +31,6 @@ eval("\n\n/**\n * Expose `arrayFlatten`.\n */\nmodule.exports = arrayFlatten\n\n
 
 /***/ }),
 
-/***/ "./app.js":
-/*!****************!*\
-  !*** ./app.js ***!
-  \****************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var express__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! express */ \"./node_modules/express/index.js\");\n/* harmony import */ var express__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(express__WEBPACK_IMPORTED_MODULE_0__);\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react */ \"./node_modules/react/index.js\");\n/* harmony import */ var react_dom_server__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react-dom/server */ \"./node_modules/react-dom/server.js\");\n/* harmony import */ var _src_containers_Home__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./src/containers/Home */ \"./src/containers/Home.js\");\n\n\n\n // const express = require('express')\n\nvar app = express__WEBPACK_IMPORTED_MODULE_0___default()();\nvar content = (0,react_dom_server__WEBPACK_IMPORTED_MODULE_2__.renderToString)( /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1__.createElement(_src_containers_Home__WEBPACK_IMPORTED_MODULE_3__.default, null));\napp.get('/', function (req, res) {\n  return res.send(\"\\n<html>\\n    <head>\\n        <title>ssr demo</title>\\n    </head>\\n    <body>\\n        \".concat(content, \"\\n    </body>\\n</html>\\n\"));\n});\napp.listen(3001, function () {\n  return console.log('Exampleapp listening on port 3000');\n});\n\n//# sourceURL=webpack://visual-editor/./app.js?");
-
-/***/ }),
-
 /***/ "./src/containers/Home.js":
 /*!********************************!*\
   !*** ./src/containers/Home.js ***!
@@ -49,7 +38,18 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var expr
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ \"./node_modules/react/index.js\");\n\n\nvar Home = function Home() {\n  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(\"div\", null, \"Home11\");\n};\n\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Home);\n\n//# sourceURL=webpack://visual-editor/./src/containers/Home.js?");
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ \"./node_modules/react/index.js\");\n\n\nvar Home = function Home() {\n  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(\"div\", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(\"div\", null, \"Home11\"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(\"button\", {\n    onClick: function onClick() {\n      alert('click');\n    }\n  }, \"click\"));\n};\n\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Home);\n\n//# sourceURL=webpack://visual-editor/./src/containers/Home.js?");
+
+/***/ }),
+
+/***/ "./src/server/app.js":
+/*!***************************!*\
+  !*** ./src/server/app.js ***!
+  \***************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var express__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! express */ \"./node_modules/express/index.js\");\n/* harmony import */ var express__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(express__WEBPACK_IMPORTED_MODULE_0__);\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react */ \"./node_modules/react/index.js\");\n/* harmony import */ var react_dom_server__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react-dom/server */ \"./node_modules/react-dom/server.js\");\n/* harmony import */ var _containers_Home__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../containers/Home */ \"./src/containers/Home.js\");\n\n\n\n\nvar app = express__WEBPACK_IMPORTED_MODULE_0___default()();\nvar content = (0,react_dom_server__WEBPACK_IMPORTED_MODULE_2__.renderToString)( /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1__.createElement(_containers_Home__WEBPACK_IMPORTED_MODULE_3__.default, null)); // 使用express提供的static中间件,中间件会将所有静态文件的路由指向public文件夹\n\napp.use(express__WEBPACK_IMPORTED_MODULE_0___default().static('public'));\napp.get('/', function (req, res) {\n  return res.send(\"\\n<html>\\n    <head>\\n        <title>ssr demo</title>\\n    </head>\\n    <body>\\n        <div id=\\\"root\\\">\\n        \".concat(content, \"\\n        </div>\\n        <script src=\\\"/index.js\\\"></script>\\n    </body>\\n</html>\\n\"));\n});\napp.listen(3001, function () {\n  return console.log('Exampleapp listening on port 3000');\n});\n\n//# sourceURL=webpack://visual-editor/./src/server/app.js?");
 
 /***/ }),
 
@@ -1471,7 +1471,7 @@ eval("module.exports = JSON.parse('{\"100\":\"Continue\",\"101\":\"Switching Pro
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module can't be inlined because the eval devtool is used.
-/******/ 	var __webpack_exports__ = __webpack_require__("./app.js");
+/******/ 	var __webpack_exports__ = __webpack_require__("./src/server/app.js");
 /******/ 	
 /******/ })()
 ;

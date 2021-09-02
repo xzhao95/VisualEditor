@@ -1,6 +1,8 @@
 const path = require('path')
+const { merge } = require('webpack-merge')
+const baseConfig = require('./webpack.base')
 
-module.exports = {
+const serverConfig = {
     target: 'node',
     mode: 'development',
     entry: './src/server/app.js',
@@ -8,14 +10,6 @@ module.exports = {
         filename: 'bundle.js',
         path: path.resolve(__dirname, 'build')
     },
-    module: {
-        rules: [{
-            test: /\.js?$/,
-            loader: 'babel-loader',
-            exclude: /node_modules/,
-            options: {
-                presets: ["@babel/preset-env", "@babel/preset-react"]
-            }
-        }]
-    }
 }
+
+module.exports = merge(baseConfig, serverConfig);

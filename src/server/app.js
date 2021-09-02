@@ -14,7 +14,9 @@ app.get('/', (req, res) => res.send(`
         <title>ssr demo</title>
     </head>
     <body>
+        <div id="root">
         ${content}
+        </div>
         <script src="/index.js"></script>
     </body>
 </html>
