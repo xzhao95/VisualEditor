@@ -1,5 +1,14 @@
-import Home from '../containers/Home'
 import React from 'react'
 import ReactDom from 'react-dom'
+import { BrowserRouter } from 'react-router-dom';
+import Router from '../Router'
 
-ReactDom.render(<Home/>, document.getElementById('root'))
+const App = () => {
+    return (
+        <BrowserRouter>
+            {Router}
+        </BrowserRouter>
+    )
+}
+
+ReactDom.hydrate(<App/>, document.getElementById('root'))
