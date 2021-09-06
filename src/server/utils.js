@@ -1,14 +1,16 @@
 import React from 'react'
+import fs from 'fs'
 import { renderToString } from 'react-dom/server'
 import { matchPath, Route, StaticRouter } from 'react-router-dom'
 import { Provider } from 'react-redux'
-import getStore from '../store'
+import getStore from '../store/serverStore'
 import routers from '../Router'
 
 const serverRender = (req, store, context) => {
+    const template = fs.readFileSync(process.cwd() + '/public/static/index.html', "utf8")
     const content = renderToString((
         <Provider store={store}>
-            <StaticRouter location={req.path} context={{}}>
+            <StaticRouter location={req.path} context={context}>
                 <div>
                     {routers.map(router => (
                         <Route {...router}/>
@@ -23,9 +25,13 @@ const serverRender = (req, store, context) => {
             INITIAL_STATE: ${JSON.stringify(store.getState())}
         }
     </script>`
+    
+    return template.replace("<!--app-->", content)
+        .replace("<!--initial-state-->", initialState);
 }
 
 export const render = (req, res) => {
+    const context = {css: []}
     const store = getStore();
     const matchRoutes = [];
     const promises = [];
@@ -43,17 +49,6 @@ export const render = (req, res) => {
         
     })
     Promise.all(promises).then(() => {
-        
-        res.send(`
-        <html>
-            <head>
-                <title>ssr demo</title>
-            </head>
-            <body>
-                <div id="root">${content}</div>
-                <script src="/index.js"></script>
-            </body>
-        </html>
-        `)
+        res.send(serverRender(req, store, context))
     })
 }
