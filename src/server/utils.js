@@ -5,6 +5,26 @@ import { Provider } from 'react-redux'
 import getStore from '../store'
 import routers from '../Router'
 
+const serverRender = (req, store, context) => {
+    const content = renderToString((
+        <Provider store={store}>
+            <StaticRouter location={req.path} context={{}}>
+                <div>
+                    {routers.map(router => (
+                        <Route {...router}/>
+                    ))}
+                </div>
+            </StaticRouter>
+        </Provider>
+    ))
+    // 注入数据
+    const initialState = `<script>
+        window.context = {
+            INITIAL_STATE: ${JSON.stringify(store.getState())}
+        }
+    </script>`
+}
+
 export const render = (req, res) => {
     const store = getStore();
     const matchRoutes = [];
@@ -15,22 +35,15 @@ export const render = (req, res) => {
     
     matchRoutes.forEach(item => {
         if(item.loadData) {
-            promises.push(item.loadData(store))
+            const promise = new Promise((resolve, reject) => {
+                item.loadData(store).then(resolve).catch(resolve)
+            })
+            promises.push(promise)
         }
         
     })
     Promise.all(promises).then(() => {
-        const content = renderToString((
-            <Provider store={store}>
-                <StaticRouter location={req.path} context={{}}>
-                    <div>
-                        {routers.map(router => (
-                            <Route {...router}/>
-                        ))}
-                    </div>
-                </StaticRouter>
-            </Provider>
-        ))
+        
         res.send(`
         <html>
             <head>
