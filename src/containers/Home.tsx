@@ -2,8 +2,19 @@ import React from 'react'
 import Header from '../component/header'
 import { connect } from 'react-redux'
 import axios from 'axios'
+import { Dispatch, Store } from 'redux'
+import { StoreState } from '../store/Store'
 
-class Home extends React.Component{
+interface HomeProps {
+    getList: () => void,
+    list: any[]
+}
+
+interface HomeState {
+    list: any[]
+}
+
+class Home extends React.Component<HomeProps>{
     componentDidMount() {
         this.props.getList()
     }
@@ -20,14 +31,15 @@ class Home extends React.Component{
             <button onClick={() => {alert('click')}}>click</button>
         </div>
     }
+
+    static loadData(store: any) {
+        return store.dispatch(getData())
+    }
 }
 
-Home.loadData = (store) => {
-    return store.dispatch(getData())
-}
 
 const getData = () => {
-    return (dispatch) => {
+    return (dispatch:Dispatch) => {
         return axios.get('http://localhost:3001/list').then(res => {
             const list = res.data;
             dispatch({type: 'CHANGE_LIST', list: list});
@@ -35,11 +47,10 @@ const getData = () => {
     }
 }
 
-const mapStateToProps = state => ({
-    name: state.name, 
+const mapStateToProps = (state:StoreState) => ({
     list: state.list
 })
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch: any) => ({
     getList() {
         dispatch(getData())
     }
