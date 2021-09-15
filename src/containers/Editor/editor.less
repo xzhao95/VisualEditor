@@ -15,6 +15,7 @@
     left: 20px;
     bottom: 20px;
     right: 20px;
+    overflow: hidden;
 
     &::before {
         position: fixed;
@@ -97,5 +98,27 @@
         padding-top: @headSize;
         padding-bottom: 300px;
         background-color: #f6f6f6;
+        overflow: auto;
+        display: flex;
+        justify-content: center;
+        .react-visual-editor-container {
+            background-color: #fff;
+            .react-visual-editor-block {
+                &::after {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    bottom: 0;
+                    right: 0;
+                    content: '';
+                }
+            }
+        }
+    }
+}
+.react-visual-editor-container {
+    position: relative;
+    .react-visual-editor-block {
+        position: absolute;
     }
 }

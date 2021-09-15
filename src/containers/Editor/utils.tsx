@@ -5,6 +5,7 @@ export interface EditorBlock {
     componentKey: string,
     top: number,
     left: number
+    adjustPosition: boolean
 }
 /**
  * 编辑器编辑的数据类型
@@ -24,6 +25,29 @@ export interface EditorComponent {
     name: string,
     preview: () => JSX.Element,
     render: () => JSX.Element
+}
+
+/**
+ * 
+ * @returns 
+ */
+export function createVisualBlock(
+    {
+        top,
+        left,
+        component
+    }: {
+        top: number,
+        left: number,
+        component: EditorComponent
+    }
+):EditorBlock {
+    return {
+        top,
+        left,
+        componentKey: component.key,
+        adjustPosition: true
+    }
 }
 /**
  * 创建一个编辑器预设配置信息对象
