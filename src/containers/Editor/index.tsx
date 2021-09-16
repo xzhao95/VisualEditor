@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { visualConfig } from "../../utils/config";
 import withStyles from "../../utils/withStyle";
-import { EditorValue } from "./utils";
-import ReactVisualEditor from './editor'
-import style from './editor.less'
-import './editor.less'
+import { EditorValue } from "./Utils";
+import ReactVisualEditor from './EditorPanel'
+import style from './EditorPanel.less'
+import './EditorPanel.less'
 
 const container = () => {
     const [editorValue, setEditorValue] = useState(() => {
@@ -18,19 +18,22 @@ const container = () => {
                     componentKey: 'text',
                     top: 100,
                     left: 100,
-                    adjustPosition: false
+                    adjustPosition: false,
+                    focus: false
                 },
                 {
                     componentKey: 'button',
                     top: 200,
                     left: 200,
-                    adjustPosition: false
+                    adjustPosition: false,
+                    focus: true
                 },
                 {
                     componentKey: 'input',
                     top: 300,
                     left: 300,
-                    adjustPosition: false
+                    adjustPosition: false,
+                    focus: true
                 }
             ]
         }

@@ -1,10 +1,12 @@
+import classNames from "classnames";
 import React, { useEffect, useMemo, useRef } from "react";
 import { useUpdate } from "../../hook/useUpdate";
-import { EditorBlock, EditorConfig } from "./utils";
+import { EditorBlock, EditorConfig } from "./Utils";
 
 export const Block:React.FC<{
     block: EditorBlock,
-    config: EditorConfig
+    config: EditorConfig,
+    onMouseDown: (e:React.MouseEvent<HTMLDivElement>, block: EditorBlock)=>void
 }> = (props) => {
     const elRef = useRef({} as HTMLDivElement)
     const {forceUpdate} = useUpdate();
@@ -16,6 +18,15 @@ export const Block:React.FC<{
             opacity: props.block.adjustPosition? '0' : ''
         }
     }, [props.block.top, props.block.left, props.block.adjustPosition])
+
+    const classes = useMemo(() => {
+        return classNames([
+            'react-visual-editor-block',
+            {
+                'react-visual-editor-block-focus': props.block.focus,
+            }
+        ])
+    }, [props.block.focus])
 
     const component = props.config.componentMap[props.block.componentKey];
     let render:any;
@@ -39,7 +50,7 @@ export const Block:React.FC<{
     }, [])
 
     return (
-        <div className="react-visual-editor-block" style={styles} ref={elRef}>
+        <div className={classes} style={styles} ref={elRef} onMouseDown={(e) => props.onMouseDown(e, props.block)}>
             {render}
         </div>
     )

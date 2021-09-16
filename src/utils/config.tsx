@@ -1,6 +1,6 @@
 import React from "react";
 import {Button, Input} from "antd"
-import { createEditorConfig } from "../containers/Editor/utils";
+import { createEditorConfig } from "../containers/Editor/Utils";
 
 export const visualConfig = createEditorConfig();
 

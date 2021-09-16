@@ -1,11 +1,10 @@
 import React, { useMemo, useRef } from "react"
 import withStyle from "../../utils/withStyle"
-import style from './editor.less'
-import './editor.less'
-import { createVisualBlock, EditorBlock, EditorComponent, EditorConfig, EditorValue } from "./utils"
+// import style from './editor.less'
+// import './EditorPanel.less'
+import { createVisualBlock, EditorBlock, EditorComponent, EditorConfig, EditorValue } from "./Utils"
 import { Block } from "./Block"
 import { useCallbackRef } from "../../hook/useCallbackRef"
-import e from "express"
 
 const ReactVisualEditor:React.FC<{
     value: EditorValue,
@@ -22,6 +21,30 @@ const ReactVisualEditor:React.FC<{
             width: `${props.value.container.width}px`
         }
     }, [props.value.container.height, props.value.container.width])
+
+    const focusData = useMemo(() => {
+        const focus: EditorBlock[] = [];
+        const unfocus: EditorBlock[] = [];
+
+        props.value.blocks.forEach(item => (item.focus ? focus : unfocus).push(item))
+        return {
+            focus,
+            unfocus
+        }
+    }, [props.value.blocks])
+
+    const methods = {
+        updateBlocks: (blocks: EditorBlock[]) => {
+            props.onChange({
+                ...props.value,
+                blocks: [...blocks]
+            })
+        },
+        clearFocus: (external?:EditorBlock) => {
+            (!!external ? focusData.focus.filter(item => external !== item) : focusData.focus).forEach(item => item.focus = false)
+            methods.updateBlocks(props.value.blocks)
+        }
+    }
 
     const menuDragger = (() => {
 
@@ -66,6 +89,37 @@ const ReactVisualEditor:React.FC<{
         return block;
     })()
 
+    const focusHandler = (() => {
+        const blockMouseDown = (e:React.MouseEvent<HTMLDivElement>, block: EditorBlock) => {
+            if(e.shiftKey) {
+                if(focusData.focus.length <= 1) {
+                    block.focus = true
+                }else {
+                    block.focus = !block.focus
+                }
+                methods.updateBlocks(props.value.blocks)
+            }else {
+                block.focus = true;
+                methods.clearFocus(block)
+            }
+
+        }
+
+        const containerMouseDown = (e:React.MouseEvent<HTMLDivElement>) => {  
+            if(e.target !== e.currentTarget) {
+                return
+            }
+            if(!e.shiftKey) {
+                methods.clearFocus()
+            }
+        }
+
+        return {
+            block: blockMouseDown,
+            container: containerMouseDown
+        }
+    })()
+
     return (
         <div className="react-visual-editor">
             <div className="react-visual-editor-menu">
@@ -84,9 +138,9 @@ const ReactVisualEditor:React.FC<{
             <div className="react-visual-editor-head">head</div>
             <div className="react-visual-editor-operator">operator</div>
             <div className="react-visual-editor-body">
-                <div className="react-visual-editor-container" style={containerStyles} ref={containerRef}>
+                <div className="react-visual-editor-container" style={containerStyles} ref={containerRef} onMouseDown={focusHandler.container}>
                     {props.value.blocks.map((block, index) => (
-                        <Block key={index} block={block} config={props.config}></Block>
+                        <Block key={index} block={block} config={props.config} onMouseDown={focusHandler.block}></Block>
                     ))}
                 </div>
             </div>

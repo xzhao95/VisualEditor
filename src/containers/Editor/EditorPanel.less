@@ -112,6 +112,16 @@
                     right: 0;
                     content: '';
                 }
+                &.react-visual-editor-block-focus::before {
+                    position: absolute;
+                    @size: 2px;
+                    top: -@size;
+                    left: -@size;
+                    bottom: -@size;
+                    right: -@size;
+                    border: dashed 1px @primary;
+                    content: '';
+                }
             }
         }
     }

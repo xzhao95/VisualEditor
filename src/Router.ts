@@ -1,4 +1,4 @@
-import ReactVisualEditor from './containers/Editor/index';
+import ReactVisualEditor from './containers/Editor/Index';
 import { RouteProps } from 'react-router-dom';
 import Home from './containers/Home'
 // import Login from './containers/Login';
