@@ -99,10 +99,13 @@ const ReactVisualEditor:React.FC<{
                 }
                 methods.updateBlocks(props.value.blocks)
             }else {
-                block.focus = true;
-                methods.clearFocus(block)
+                if(!block.focus) {
+                    block.focus = true;
+                    methods.clearFocus(block)
+                }
             }
 
+            setTimeout(() => blockDragger.mouseDown(e))
         }
 
         const containerMouseDown = (e:React.MouseEvent<HTMLDivElement>) => {  
@@ -117,6 +120,46 @@ const ReactVisualEditor:React.FC<{
         return {
             block: blockMouseDown,
             container: containerMouseDown
+        }
+    })()
+
+    const blockDragger = (() => {
+        const dragData = useRef({
+            startX: 0,
+            startY: 0,
+            startPositions: [] as {top: number, left: number}[]
+        })
+
+        const mouseDown = useCallbackRef((e: React.MouseEvent<HTMLDivElement>) => {
+            document.addEventListener('mousemove', mouseMove);
+            document.addEventListener('mouseup', mouseUp);
+            dragData.current = {
+                startX: e.clientX,
+                startY: e.clientY,
+                startPositions: focusData.focus.map(({top, left}) => ({top, left}))
+            }
+        })
+
+        const mouseMove = useCallbackRef((e:MouseEvent) => {
+            const {startX, startY, startPositions} = dragData.current;
+            const {clientX, clientY} = e;
+            const diffX = clientX - startX, diffY = clientY - startY;
+
+            focusData.focus.forEach((block, index) => {
+                block.top = startPositions[index].top + diffY;
+                block.left = startPositions[index].left + diffX;
+            });
+
+            methods.updateBlocks(props.value.blocks);
+        })
+
+        const mouseUp = useCallbackRef((e:MouseEvent) => {
+            document.removeEventListener('mousemove', mouseMove);
+            document.removeEventListener('mouseup', mouseUp);
+        })
+
+        return {
+            mouseDown
         }
     })()
 
