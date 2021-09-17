@@ -1,10 +1,11 @@
-import React, { useMemo, useRef } from "react"
+import React, { useMemo, useRef, useState } from "react"
 import withStyle from "../../utils/withStyle"
 // import style from './editor.less'
 // import './EditorPanel.less'
 import { createVisualBlock, EditorBlock, EditorComponent, EditorConfig, EditorValue } from "./Utils"
 import { Block } from "./Block"
 import { useCallbackRef } from "../../hook/useCallbackRef"
+import { useVisualCommand } from "./Command"
 
 const ReactVisualEditor:React.FC<{
     value: EditorValue,
@@ -13,7 +14,10 @@ const ReactVisualEditor:React.FC<{
 }> = (props) => {
     // console.log(props);
 
-    const containerRef = useRef({} as HTMLDivElement)
+    const containerRef = useRef({} as HTMLDivElement);
+
+    const [preview, setPreview] = useState(false);
+    const [editing, setEditing] = useState(false);
 
     const containerStyles = useMemo(() => {
         return {
@@ -163,6 +167,28 @@ const ReactVisualEditor:React.FC<{
         }
     })()
 
+    const commander = useVisualCommand({
+        focusData,
+        value: props.value,
+        updateBlocks: methods.updateBlocks
+    });
+
+    const buttons: {
+        label: string | (() => string),
+        icon: string | (() => string),
+        tip?: string | (() => string),
+        handler: () => void
+    }[] = [
+        {label: "撤销", icon: "icon-chexiao", handler: commander.undo},
+        {label: "重做", icon: "icon-zhongzuo", handler: commander.redo},
+        {label: () => preview ? '预览' : '编辑', icon: () => preview ? "icon-chakan" : "icon-bianji", handler: () => {}},
+        {label: "导入", icon: "icon--daoru", handler: () => {}},
+        {label: "导出", icon: "icon--daochu", handler: () => {}},
+        {label: "删除", icon: "icon-shanchu", handler: commander.delete},
+        {label: "清空", icon: "icon-huanyuan", handler: () => {}},
+        {label: "关闭", icon: "icon-guanbi", handler: () => {}}
+    ]
+
     return (
         <div className="react-visual-editor">
             <div className="react-visual-editor-menu">
@@ -178,7 +204,18 @@ const ReactVisualEditor:React.FC<{
                     </div>
                 ))}
             </div>
-            <div className="react-visual-editor-head">head</div>
+            <div className="react-visual-editor-head">
+                {buttons.map((btn, index) => {
+                    const icon = typeof btn.icon == 'function' ? btn.icon() : btn.icon;
+                    const label = typeof btn.label == 'function' ? btn.label() : btn.label;
+                    return (
+                        <div className="react-visual-editor-head-btn" key={index} onClick={btn.handler}>
+                            <i className={`iconfont ${icon}`}></i>
+                            <span>{label}</span>
+                        </div>
+                    )
+                })}
+            </div>
             <div className="react-visual-editor-operator">operator</div>
             <div className="react-visual-editor-body">
                 <div className="react-visual-editor-container" style={containerStyles} ref={containerRef} onMouseDown={focusHandler.container}>

@@ -1,3 +1,5 @@
+@import "../../styles/iconfont/iconfont.css";
+
 @headSize: 60px;  //编辑器头部高度
 @menuSize: 275px; //编辑器菜单高度
 @operatorSize: 275px; //右侧菜单栏高度
@@ -80,6 +82,47 @@
         right: @operatorSize;
         height: @headSize;
         z-index: 1;
+        display: flex;
+        justify-content: center;
+        .react-visual-editor-head-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            width: 60px;
+            height: 60px;
+            background-color: rgba(0,0,0,0.3);
+            color: #fff;
+            cursor: pointer;
+            transition: all 300ms linear;
+            user-select: none;
+            &:not(:last-child) {
+                &::after {
+                    position: absolute;
+                    top: 0;
+                    right: -0.5px;
+                    bottom: 0;
+                    width: 1px;
+                    background-color: #fff;
+                    content: '';
+                }
+            }
+            &:hover {
+                color: @primary;
+                background-color: #fff;
+            }
+            &:active {
+
+                background: mix(@primary, #fff, 20%);
+            }
+            & > i {
+                font-size: 20px;
+            }
+            & > span {
+                font-size: 12px;
+            }
+        }
     }
     .react-visual-editor-operator {
         top: 0;
