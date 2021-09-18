@@ -6,6 +6,7 @@ import { createVisualBlock, EditorBlock, EditorComponent, EditorConfig, EditorVa
 import { Block } from "./Block"
 import { useCallbackRef } from "../../hook/useCallbackRef"
 import { useVisualCommand } from "./Command"
+import { createEvent } from "../../plugin/event"
 
 const ReactVisualEditor:React.FC<{
     value: EditorValue,
@@ -18,6 +19,9 @@ const ReactVisualEditor:React.FC<{
 
     const [preview, setPreview] = useState(false);
     const [editing, setEditing] = useState(false);
+
+    const [dragstart] = useState(() => createEvent());
+    const [dragend] = useState(() => createEvent());
 
     const containerStyles = useMemo(() => {
         return {
@@ -62,7 +66,8 @@ const ReactVisualEditor:React.FC<{
                 containerRef.current.addEventListener('dragover', container.dragover);
                 containerRef.current.addEventListener('dragleave', container.dragleave);
                 containerRef.current.addEventListener('drop', container.drop);
-                dragData.current.dragComponent = dragComponent
+                dragData.current.dragComponent = dragComponent;
+                dragstart.emit();
             }),
             dragend: useCallbackRef((e:React.DragEvent<HTMLDivElement>) => {
                 containerRef.current.removeEventListener('dragenter', container.dragenter);
@@ -76,17 +81,15 @@ const ReactVisualEditor:React.FC<{
             dragover: useCallbackRef((e:DragEvent) => {e.preventDefault()}),
             dragleave: useCallbackRef((e:DragEvent) => {e.dataTransfer!.dropEffect = 'none'}),
             drop: useCallbackRef((e:DragEvent) => {
-                props.onChange({
-                    ...props.value,
-                    blocks: [
-                        ...props.value.blocks,
-                        createVisualBlock({
-                            top: e.offsetY,
-                            left: e.offsetX,
-                            component: dragData.current.dragComponent as EditorComponent
-                        })
-                    ]
-                })
+                methods.updateBlocks([
+                    ...props.value.blocks,
+                    createVisualBlock({
+                        top: e.offsetY,
+                        left: e.offsetX,
+                        component: dragData.current.dragComponent as EditorComponent
+                    })
+                ]);
+                setTimeout(() => dragend.emit())
             })
         }
 
@@ -131,7 +134,8 @@ const ReactVisualEditor:React.FC<{
         const dragData = useRef({
             startX: 0,
             startY: 0,
-            startPositions: [] as {top: number, left: number}[]
+            startPositions: [] as {top: number, left: number}[],
+            dragging: false
         })
 
         const mouseDown = useCallbackRef((e: React.MouseEvent<HTMLDivElement>) => {
@@ -140,11 +144,16 @@ const ReactVisualEditor:React.FC<{
             dragData.current = {
                 startX: e.clientX,
                 startY: e.clientY,
-                startPositions: focusData.focus.map(({top, left}) => ({top, left}))
+                startPositions: focusData.focus.map(({top, left}) => ({top, left})),
+                dragging: false
             }
         })
 
         const mouseMove = useCallbackRef((e:MouseEvent) => {
+            if(!dragData.current.dragging) {
+                dragData.current.dragging = true;
+                dragstart.emit();
+            }
             const {startX, startY, startPositions} = dragData.current;
             const {clientX, clientY} = e;
             const diffX = clientX - startX, diffY = clientY - startY;
@@ -160,6 +169,9 @@ const ReactVisualEditor:React.FC<{
         const mouseUp = useCallbackRef((e:MouseEvent) => {
             document.removeEventListener('mousemove', mouseMove);
             document.removeEventListener('mouseup', mouseUp);
+            if(dragData.current.dragging) {
+                dragend.emit();
+            }
         })
 
         return {
@@ -170,7 +182,9 @@ const ReactVisualEditor:React.FC<{
     const commander = useVisualCommand({
         focusData,
         value: props.value,
-        updateBlocks: methods.updateBlocks
+        updateBlocks: methods.updateBlocks,
+        dragstart,
+        dragend
     });
 
     const buttons: {

@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useCallback, useState, useRef } from 'react';
+import { isBrowser } from '../utils/browser';
 import { KeyboardCode } from './keyboardCode';
 
 export interface CommandExecute {
@@ -72,12 +73,14 @@ export function useCommander() {
             if(altKey) keyString.push('alt')
             keyString.push(KeyboardCode[keyCode]);
             const keyName = keyString.join('+');
+
+            if(!keyName) return
             state.commandArray.forEach(({current: {keyboard, name}}) => {
                 if(!keyboard) {
                     return;
                 }
                 const keys = Array.isArray(keyboard) ? keyboard : [keyboard];
-                if(keys.indexOf(keyName)) {
+                if(keys.indexOf(keyName) >= 0) {
                     state.commands[name]();
                     e.stopPropagation();
                     e.preventDefault();
@@ -86,10 +89,11 @@ export function useCommander() {
         }
 
         const init = () => {
-            // window.addEventListener('keydown', onkeydown);
-            // return () => {
-            //     window.removeEventListener('keydown', onkeydown);
-            // }
+            
+            isBrowser && window.addEventListener('keydown', onkeydown);
+            return () => {
+                isBrowser && window.removeEventListener('keydown', onkeydown);
+            }
         }
         return {init}
     })
@@ -100,7 +104,7 @@ export function useCommander() {
     const useInit = useCallback(() => {
         useState(() => {
             state.commandArray.forEach(command => !!command.current.init && state.destoryList.push(command.current.init()));
-            // state.destoryList.push(keyboardEvent.init())
+            state.destoryList.push(keyboardEvent.init())
         })
 
         /* 内置命令 */
