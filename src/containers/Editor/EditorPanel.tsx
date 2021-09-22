@@ -8,6 +8,8 @@ import { useCallbackRef } from "../../hook/useCallbackRef"
 import { useVisualCommand } from "./Command"
 import { createEvent } from "../../plugin/event"
 import classNames from "classnames"
+import {$$dialog} from "../../service/dialog/$$dialog"
+import { notification } from "antd"
 
 const ReactVisualEditor:React.FC<{
     value: EditorValue,
@@ -52,6 +54,9 @@ const ReactVisualEditor:React.FC<{
     }, [props.value.blocks])
 
     const methods = {
+        updateValue: (value:EditorValue) => {
+            props.onChange({...value});
+        },
         updateBlocks: (blocks: EditorBlock[]) => {
             props.onChange({
                 ...props.value,
@@ -193,6 +198,7 @@ const ReactVisualEditor:React.FC<{
     const commander = useVisualCommand({
         focusData,
         value: props.value,
+        updateValue: methods.updateValue,
         updateBlocks: methods.updateBlocks,
         dragstart,
         dragend
@@ -212,8 +218,22 @@ const ReactVisualEditor:React.FC<{
             }
             setPreview(!preview)
         }},
-        {label: "导入", icon: "icon--daoru", handler: () => {}},
-        {label: "导出", icon: "icon--daochu", handler: () => {}},
+        {label: "导入", icon: "icon--daoru", handler: async () => {
+            const text = await $$dialog.textarea('', {title: '请输入导入JSON数据'});
+            try {
+                const data = JSON.parse(text || '');
+                commander.updateValue(data);
+            }catch(e) {
+                console.log(e);
+                notification.open({
+                    message: '导入失败',
+                    description: '导入的数据格式不正常，请检查'
+                })
+            }
+        }},
+        {label: "导出", icon: "icon--daochu", handler: () => {
+            $$dialog.textarea(JSON.stringify(props.value), {editReadonly: true, title: '导出的JSON数据'})
+        }},
         {label: "置顶", icon: "icon-control-top", handler: commander.placeTop},
         {label: "置底", icon: "icon-control-bottom", handler: commander.placeBottom},
         {label: "删除", icon: "icon-shanchu", handler: commander.delete},

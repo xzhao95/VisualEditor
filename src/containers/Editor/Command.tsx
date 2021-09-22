@@ -8,6 +8,7 @@ export function useVisualCommand(
     {
         focusData,
         value,
+        updateValue,
         updateBlocks,
         dragstart,
         dragend
@@ -17,6 +18,7 @@ export function useVisualCommand(
             unfocus: EditorBlock[]
         },
         value: EditorValue,
+        updateValue: (value: EditorValue) => void,
         updateBlocks: (blocks: EditorBlock[]) => void,
         dragstart: {on: (cb: () => void) => void, off: (cb: () => void) => void},
         dragend: {on: (cb: () => void) => void, off: (cb: () => void) => void},
@@ -191,6 +193,26 @@ export function useVisualCommand(
         }
     })
 
+    /**
+     * 更新value
+     */
+    commander.useRegistry({
+        name: 'updateValue',
+        followQueue: true,
+        execute: (newVal) => {
+            const before = deepcopy(value);
+            const after = deepcopy(newVal) 
+            return {
+                redo: () => {
+                    updateValue(after);
+                },
+                undo: () => {
+                    updateValue(before)
+                }
+            }
+        }
+    })
+
     commander.useInit()
     return {
         delete: () => commander.state.commands.delete(),
@@ -198,6 +220,7 @@ export function useVisualCommand(
         redo: () => commander.state.commands.redo(),
         placeTop: () => commander.state.commands.placeTop(),
         placeBottom: () => commander.state.commands.placeBottom(),
-        clear: () => commander.state.commands.clear()
+        clear: () => commander.state.commands.clear(),
+        updateValue: (newVal:string) => commander.state.commands.updateValue(newVal)
     }
 }

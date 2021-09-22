@@ -1,7 +1,7 @@
 import ReactVisualEditor from './containers/Editor/Index';
 import { RouteProps } from 'react-router-dom';
 import Home from './containers/Home'
-// import Login from './containers/Login';
+import Login from './containers/Login';
 import DraggerDemo from './containers/DraggerDemo';
 
 export interface RouteConfig extends RouteProps {
@@ -15,6 +15,12 @@ export default [
         exact: true,
         loadData: Home.loadData,
         key: 'Home'
+    },
+    {
+        path: '/login',
+        component: Login,
+        exact: true,
+        key: 'Login'
     },
     {
         path: '/dragger-demo',
