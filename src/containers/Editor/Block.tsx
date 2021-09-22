@@ -15,9 +15,10 @@ export const Block:React.FC<{
         return {
             top: `${props.block.top}px`,
             left: `${props.block.left}px`,
-            opacity: props.block.adjustPosition? '0' : ''
+            opacity: props.block.adjustPosition? '0' : '',
+            zIndex: props.block.index
         }
-    }, [props.block.top, props.block.left, props.block.adjustPosition])
+    }, [props.block.top, props.block.left, props.block.index, props.block.adjustPosition])
 
     const classes = useMemo(() => {
         return classNames([

@@ -7,6 +7,7 @@ import { Block } from "./Block"
 import { useCallbackRef } from "../../hook/useCallbackRef"
 import { useVisualCommand } from "./Command"
 import { createEvent } from "../../plugin/event"
+import classNames from "classnames"
 
 const ReactVisualEditor:React.FC<{
     value: EditorValue,
@@ -22,6 +23,15 @@ const ReactVisualEditor:React.FC<{
 
     const [dragstart] = useState(() => createEvent());
     const [dragend] = useState(() => createEvent());
+
+    const classes = useMemo(() => {
+        return classNames([
+            'react-visual-editor',
+            {
+                'react-visual-editor-preview': preview
+            }
+        ])
+    }, [preview])
 
     const containerStyles = useMemo(() => {
         return {
@@ -98,6 +108,7 @@ const ReactVisualEditor:React.FC<{
 
     const focusHandler = (() => {
         const blockMouseDown = (e:React.MouseEvent<HTMLDivElement>, block: EditorBlock) => {
+            if(preview) return;
             if(e.shiftKey) {
                 if(focusData.focus.length <= 1) {
                     block.focus = true
@@ -195,16 +206,23 @@ const ReactVisualEditor:React.FC<{
     }[] = [
         {label: "撤销", icon: "icon-chexiao", handler: commander.undo},
         {label: "重做", icon: "icon-zhongzuo", handler: commander.redo},
-        {label: () => preview ? '预览' : '编辑', icon: () => preview ? "icon-chakan" : "icon-bianji", handler: () => {}},
+        {label: () => !preview ? '预览' : '编辑', icon: () => !preview ? "icon-chakan" : "icon-bianji", handler: () => {
+            if(!preview) {
+                methods.clearFocus();
+            }
+            setPreview(!preview)
+        }},
         {label: "导入", icon: "icon--daoru", handler: () => {}},
         {label: "导出", icon: "icon--daochu", handler: () => {}},
+        {label: "置顶", icon: "icon-control-top", handler: commander.placeTop},
+        {label: "置底", icon: "icon-control-bottom", handler: commander.placeBottom},
         {label: "删除", icon: "icon-shanchu", handler: commander.delete},
-        {label: "清空", icon: "icon-huanyuan", handler: () => {}},
+        {label: "清空", icon: "icon-huanyuan", handler: commander.clear},
         {label: "关闭", icon: "icon-guanbi", handler: () => {}}
     ]
 
     return (
-        <div className="react-visual-editor">
+        <div className={classes}>
             <div className="react-visual-editor-menu">
                 {props.config.componentArray.map((component, index) => (
                     <div className="react-visual-editor-menu-item" key={index} 

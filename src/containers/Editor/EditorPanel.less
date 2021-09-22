@@ -29,6 +29,22 @@
         background-color: rgba(black, 0.1);
     }
 
+    &.react-visual-editor-preview {
+        .react-visual-editor-body {
+            .react-visual-editor-container {
+                &::before {
+                    display: none;
+                }
+                .react-visual-editor-block {
+                    user-select: auto;
+                    &::after {
+                        display: none;
+                    }
+                }
+            }
+        }
+    }
+
     .react-visual-editor-menu,
     .react-visual-editor-head,
     .react-visual-editor-operator,
@@ -146,6 +162,15 @@
         justify-content: center;
         .react-visual-editor-container {
             background-color: #fff;
+            &::before {
+                position: absolute;
+                top: 0;
+                right: 0;
+                bottom: 0;
+                left: 0;
+                border: solid 1px @primary;
+                content: '';
+            }
             .react-visual-editor-block {
                 user-select: none;
                 &::after {

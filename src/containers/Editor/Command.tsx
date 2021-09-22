@@ -101,10 +101,103 @@ export function useVisualCommand(
         }
     })
 
+    /**
+     * 置顶命令
+     */
+
+    commander.useRegistry({
+        name: 'placeTop',
+        keyboard: 'ctrl+up',
+        followQueue: true,
+        execute: () => {
+            const before = deepcopy(value.blocks);
+            const after = deepcopy((() => {
+                const {focus, unfocus} = focusData;
+                const maxUnfocusIndex = unfocus.reduce((prev, cur) => Math.max(prev, cur.index), -Infinity);
+                const minFocusIndex = focus.reduce((prev, cur) => Math.min(prev, cur.index), Infinity);
+
+                let diff = maxUnfocusIndex - minFocusIndex;
+                if(diff >= 0) {
+                    diff ++;
+                    focus.forEach(block => block.index = block.index + diff)
+                }
+                return value.blocks
+            })())
+            return {
+                redo: () => {
+                    updateBlocks(deepcopy(after))
+                },
+                undo: () =>{
+                    updateBlocks(deepcopy(before))
+                }
+            }
+        }
+    })
+
+    /**
+     * 置底命令
+     */
+
+     commander.useRegistry({
+        name: 'placeBottom',
+        keyboard: 'ctrl+down',
+        followQueue: true,
+        execute: () => {
+            const before = deepcopy(value.blocks);
+            const after = deepcopy((() => {
+                const {focus, unfocus} = focusData;
+                const minUnfocusIndex = unfocus.reduce((prev, cur) => Math.min(prev, cur.index), Infinity);
+                const maxFocusIndex = focus.reduce((prev, cur) => Math.max(prev, cur.index), -Infinity);
+                const minFocusIndex = focus.reduce((prev, cur) => Math.min(prev, cur.index), Infinity);
+
+                let diff = maxFocusIndex - minUnfocusIndex;
+                if(diff >= 0) {
+                    diff ++;
+                    focus.forEach(block => block.index = block.index - diff);
+                    if(minFocusIndex - diff < 0) {
+                        diff = diff - minFocusIndex;
+                        value.blocks.forEach(block => block.index = block.index + diff)
+                    }
+                }
+                return value.blocks
+            })())
+            return {
+                redo: () => {
+                    updateBlocks(deepcopy(after))
+                },
+                undo: () =>{
+                    updateBlocks(deepcopy(before))
+                }
+            }
+        }
+    })
+    /**
+     * 清空
+     */
+    commander.useRegistry({
+        name: 'clear',
+        followQueue: true,
+        execute: () => {
+            const before = deepcopy(value.blocks);
+            const after = deepcopy([]);
+            return {
+                redo: () => {
+                    updateBlocks(deepcopy(after))
+                },
+                undo: () => {
+                    updateBlocks(deepcopy(before))
+                }
+            }
+        }
+    })
+
     commander.useInit()
     return {
         delete: () => commander.state.commands.delete(),
         undo: () => commander.state.commands.undo(),
-        redo: () => commander.state.commands.redo()
+        redo: () => commander.state.commands.redo(),
+        placeTop: () => commander.state.commands.placeTop(),
+        placeBottom: () => commander.state.commands.placeBottom(),
+        clear: () => commander.state.commands.clear()
     }
 }

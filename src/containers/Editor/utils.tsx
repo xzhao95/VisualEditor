@@ -6,7 +6,8 @@ export interface EditorBlock {
     top: number,
     left: number
     adjustPosition: boolean,
-    focus: boolean
+    focus: boolean,
+    index: number
 }
 /**
  * 编辑器编辑的数据类型
@@ -48,7 +49,8 @@ export function createVisualBlock(
         left,
         componentKey: component.key,
         adjustPosition: true,
-        focus: false
+        focus: false,
+        index: 0
     }
 }
 /**

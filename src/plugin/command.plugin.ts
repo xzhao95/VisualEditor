@@ -10,7 +10,7 @@ export interface CommandExecute {
 
 export interface Command {
     name: string,
-    keyboard: string | string[],
+    keyboard?: string | string[],
     execute: (...args: any[]) => CommandExecute,
     followQueue: boolean,
     init?: () => (()=>void | undefined)
