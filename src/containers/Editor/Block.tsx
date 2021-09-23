@@ -6,7 +6,8 @@ import { EditorBlock, EditorConfig } from "./Utils";
 export const Block:React.FC<{
     block: EditorBlock,
     config: EditorConfig,
-    onMouseDown: (e:React.MouseEvent<HTMLDivElement>, block: EditorBlock)=>void
+    onMouseDown: (e:React.MouseEvent<HTMLDivElement>)=>void,
+    onContextMenu: (e:React.MouseEvent<HTMLElement>) => void
 }> = (props) => {
     const elRef = useRef({} as HTMLDivElement)
     const {forceUpdate} = useUpdate();
@@ -51,7 +52,13 @@ export const Block:React.FC<{
     }, [])
 
     return (
-        <div className={classes} style={styles} ref={elRef} onMouseDown={(e) => props.onMouseDown(e, props.block)}>
+        <div 
+            className={classes} 
+            style={styles} 
+            ref={elRef} 
+            onMouseDown={props.onMouseDown}
+            onContextMenu={props.onContextMenu}
+        >
             {render}
         </div>
     )

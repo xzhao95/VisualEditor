@@ -10,6 +10,7 @@ import { createEvent } from "../../plugin/event"
 import classNames from "classnames"
 import {$$dialog} from "../../service/dialog/$$dialog"
 import { notification } from "antd"
+import { $$dropdown, DropdownItem } from "../../service/dropdown/$$dropdown"
 
 const ReactVisualEditor:React.FC<{
     value: EditorValue,
@@ -66,6 +67,22 @@ const ReactVisualEditor:React.FC<{
         clearFocus: (external?:EditorBlock) => {
             (!!external ? focusData.focus.filter(item => external !== item) : focusData.focus).forEach(item => item.focus = false)
             methods.updateBlocks(props.value.blocks)
+        },
+        showBlockData: (block:EditorBlock) => {
+            $$dialog.textarea(JSON.stringify(block), {editReadonly: true, title: '节点的数据'})
+        },
+        importBlockData: async (block:EditorBlock) => {
+            const text = await $$dialog.textarea('', {title: '请输入导入的节点内容JSON数据'});
+            try {
+                const data = JSON.parse(text || '');
+                commander.updateBlock(data, block);
+            }catch(e) {
+                console.log(e);
+                notification.open({
+                    message: '导入失败',
+                    description: '导入的数据格式不正常，请检查'
+                })
+            }
         }
     }
 
@@ -114,6 +131,7 @@ const ReactVisualEditor:React.FC<{
     const focusHandler = (() => {
         const blockMouseDown = (e:React.MouseEvent<HTMLDivElement>, block: EditorBlock) => {
             if(preview) return;
+            if(e.button == 2) return
             if(e.shiftKey) {
                 if(focusData.focus.length <= 1) {
                     block.focus = true
@@ -241,6 +259,23 @@ const ReactVisualEditor:React.FC<{
         {label: "关闭", icon: "icon-guanbi", handler: () => {}}
     ]
 
+    const handler = {
+        onContextMenuBlock: (e: React.MouseEvent<HTMLElement>, block: EditorBlock) => {
+            e.preventDefault();
+            e.stopPropagation();
+            $$dropdown({
+                refrence: e.nativeEvent,
+                render: () => <>
+                    <DropdownItem icon="icon-control-top" onClick={commander.placeTop}>置顶节点</DropdownItem>
+                    <DropdownItem icon="icon-control-bottom" onClick={commander.placeBottom}>置底节点</DropdownItem>
+                    <DropdownItem icon="icon-shanchu" onClick={commander.delete}>删除节点</DropdownItem>
+                    <DropdownItem icon="icon-chakan" onClick={() => methods.showBlockData(block)}>查看数据</DropdownItem>
+                    <DropdownItem icon="icon--daoru" onClick={() => methods.importBlockData(block)}>导入数据</DropdownItem>
+                </>
+            })
+        }
+    }
+
     return (
         <div className={classes}>
             <div className="react-visual-editor-menu">
@@ -272,7 +307,13 @@ const ReactVisualEditor:React.FC<{
             <div className="react-visual-editor-body">
                 <div className="react-visual-editor-container" style={containerStyles} ref={containerRef} onMouseDown={focusHandler.container}>
                     {props.value.blocks.map((block, index) => (
-                        <Block key={index} block={block} config={props.config} onMouseDown={focusHandler.block}></Block>
+                        <Block 
+                            key={index} 
+                            block={block} 
+                            config={props.config} 
+                            onMouseDown={e => focusHandler.block(e, block)}
+                            onContextMenu={e => handler.onContextMenuBlock(e, block)}
+                        ></Block>
                     ))}
                 </div>
             </div>

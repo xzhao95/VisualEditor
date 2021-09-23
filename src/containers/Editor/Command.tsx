@@ -213,6 +213,27 @@ export function useVisualCommand(
         }
     })
 
+    /**
+     * 更新block
+     */
+    commander.useRegistry({
+        name: 'updateBlock',
+        followQueue: true,
+        execute: (newBlock, oldBlock) => {
+            const before = deepcopy(value);
+            value.blocks.splice(value.blocks.indexOf(oldBlock), 1, newBlock);
+            const after = deepcopy(value);
+            return {
+                redo: () => {
+                    updateValue(deepcopy(after))
+                },
+                undo: () => {
+                    updateValue(deepcopy(before))
+                }
+            }
+        }
+    })
+
     commander.useInit()
     return {
         delete: () => commander.state.commands.delete(),
@@ -221,6 +242,7 @@ export function useVisualCommand(
         placeTop: () => commander.state.commands.placeTop(),
         placeBottom: () => commander.state.commands.placeBottom(),
         clear: () => commander.state.commands.clear(),
-        updateValue: (newVal:string) => commander.state.commands.updateValue(newVal)
+        updateValue: (newVal:string) => commander.state.commands.updateValue(newVal),
+        updateBlock: (newBlock: EditorBlock, oldBlock: EditorBlock) => commander.state.commands.updateBlock(newBlock, oldBlock),
     }
 }

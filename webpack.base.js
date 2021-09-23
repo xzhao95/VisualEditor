@@ -26,6 +26,10 @@ module.exports = {
                 }
             ],
             exclude: /node_modules/
+        },
+        {
+            test: /\.(woff|svg|eot|ttf)\??.*$/,
+            loader: 'url-loader'
         }]
     },
     resolve: {

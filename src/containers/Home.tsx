@@ -4,7 +4,8 @@ import { connect } from 'react-redux'
 import axios from 'axios'
 import { Dispatch, Store } from 'redux'
 import { StoreState } from '../store/Store'
-
+import style from './Editor/EditorPanel.less'
+import withStyles from "isomorphic-style-loader/withStyles";
 interface HomeProps {
     getList: () => void,
     list: any[]
@@ -20,7 +21,7 @@ class Home extends React.Component<HomeProps>{
     }
 
     render() {
-        return <div>
+        return <div className={style.testbg}>
             <Header></Header>
             { this.props.list ? 
             <div>
@@ -55,4 +56,4 @@ const mapDispatchToProps = (dispatch: any) => ({
         dispatch(getData())
     }
 })
-export default connect(mapStateToProps, mapDispatchToProps)(Home);
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(style)(Home));
