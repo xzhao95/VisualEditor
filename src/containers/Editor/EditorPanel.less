@@ -12,6 +12,10 @@
 @boxShadowColor: #f0f1f2; //阴影颜色
 @primary: #409eff; //基础色
 
+.testbg {
+    background: red;
+}
+
 .react-visual-editor {
     position: fixed;
     top: 20px;
@@ -201,4 +205,17 @@
     .react-visual-editor-block {
         position: absolute;
     }
+}
+
+.react-visual-editor-mark-x {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    border-left: dashed 1px @primary;
+}
+.react-visual-editor-mark-y {
+    position: absolute;
+    left: 0;
+    right: 0;
+    border-top: dashed 1px @primary;;
 }

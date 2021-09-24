@@ -4,7 +4,9 @@
 export interface EditorBlock {
     componentKey: string,
     top: number,
-    left: number
+    left: number,
+    width: number,
+    height: number,
     adjustPosition: boolean,
     focus: boolean,
     index: number
@@ -47,10 +49,12 @@ export function createVisualBlock(
     return {
         top,
         left,
+        width: 0,
+        height: 0,
         componentKey: component.key,
         adjustPosition: true,
         focus: false,
-        index: 0
+        index: 0,
     }
 }
 /**

@@ -146,7 +146,7 @@ const ReactVisualEditor:React.FC<{
                 }
             }
 
-            setTimeout(() => blockDragger.mouseDown(e))
+            setTimeout(() => blockDragger.mouseDown(e, block))
         }
 
         const containerMouseDown = (e:React.MouseEvent<HTMLDivElement>) => {  
@@ -165,22 +165,58 @@ const ReactVisualEditor:React.FC<{
     })()
 
     const blockDragger = (() => {
+        const [mark, setMark] = useState({x: null as null | number, y: null as null | number})
         const dragData = useRef({
-            startX: 0,
-            startY: 0,
-            startPositions: [] as {top: number, left: number}[],
-            dragging: false
+            startX: 0,    // 拖拽开始时，鼠标的left
+            startY: 0,    // 拖拽开始时，鼠标的top
+            startTop: 0,  // 拖拽开始时，拖拽block的top
+            startLeft: 0, // 拖拽开始时，拖拽block的left
+            startPositions: [] as {top: number, left: number}[],  // 拖拽开始时，所有选中的block元素的top值以及left值
+            dragging: false,  // 当前是否是拖拽状态
+            markLines: {
+                x: [] as {left: number, showLeft: number}[],
+                y: [] as {top: number, showTop: number}[]
+            }
         })
 
-        const mouseDown = useCallbackRef((e: React.MouseEvent<HTMLDivElement>) => {
+        
+
+        const mouseDown = useCallbackRef((e: React.MouseEvent<HTMLDivElement>, block:EditorBlock) => {
             document.addEventListener('mousemove', mouseMove);
             document.addEventListener('mouseup', mouseUp);
             dragData.current = {
                 startX: e.clientX,
                 startY: e.clientY,
+                startTop: block.top,
+                startLeft: block.left,
                 startPositions: focusData.focus.map(({top, left}) => ({top, left})),
-                dragging: false
+                dragging: false,
+                markLines: (() => {
+                    const x: {left: number, showLeft: number}[] = [];
+                    const y: {top: number, showTop: number}[] = [];
+
+                    const {unfocus} = focusData;
+                    unfocus.forEach(b => {
+                        y.push({top: b.top - block.height, showTop: b.top})   // 底部对顶部
+                        y.push({top: b.top ,showTop: b.top})   //顶部对顶部
+                        y.push({top: b.top + b.height / 2 - block.height / 2, showTop: b.top + b.height / 2})  //中间对中间
+                        y.push({top: b.top + b.height - block.height, showTop: b.top + b.height})   // 底部对底部
+                        y.push({top: b.top + b.height, showTop: b.top + b.height})   //顶部对底部
+                        
+                        x.push({left: b.left - block.width, showLeft: b.left})   // 底部对顶部
+                        x.push({left: b.left ,showLeft: b.left})   //顶部对顶部
+                        x.push({left: b.left + b.width / 2 - block.width / 2, showLeft: b.left + b.width / 2})  //中间对中间
+                        x.push({left: b.left + b.width - block.width, showLeft: b.left + b.width})   // 底部对底部
+                        x.push({left: b.left + b.width, showLeft: b.left + b.width})   //顶部对底部
+                    })
+
+                    return {
+                        x,
+                        y
+                    }
+                })()
             }
+            console.log(block)
         })
 
         const mouseMove = useCallbackRef((e:MouseEvent) => {
@@ -188,28 +224,64 @@ const ReactVisualEditor:React.FC<{
                 dragData.current.dragging = true;
                 dragstart.emit();
             }
-            const {startX, startY, startPositions} = dragData.current;
-            const {clientX, clientY} = e;
-            const diffX = clientX - startX, diffY = clientY - startY;
+            const {startX, startY, startTop, startLeft, startPositions, markLines} = dragData.current;
+            let {clientX, clientY} = e;
 
+            if(e.shiftKey) {
+                if(Math.abs(clientX - startX) > Math.abs(clientY - startY)) {
+                    clientY = startY
+                }else {
+                    clientX = startX
+                }
+            }
+
+            const now = {
+                mark: {
+                    x: null as null | number,
+                    y: null as null | number,
+                },
+                top: startTop + clientY - startY,
+                left: startLeft + clientX - startX
+            }
+
+            for(let i = 0; i < markLines.y.length; i ++) {
+                const {top, showTop} = markLines.y[i];
+                if(Math.abs(now.top - top) < 5) {
+                    clientY = top - startTop + startY;
+                    now.mark.y = showTop
+                }
+            }
+
+            for(let i = 0; i < markLines.x.length; i ++) {
+                const {left, showLeft} = markLines.x[i];
+                if(Math.abs(now.left - left) < 5) {
+                    clientX = left - showLeft + startX;
+                    now.mark.x = showLeft
+                }
+            }
+
+            const diffX = clientX - startX, diffY = clientY - startY;
             focusData.focus.forEach((block, index) => {
                 block.top = startPositions[index].top + diffY;
                 block.left = startPositions[index].left + diffX;
             });
 
             methods.updateBlocks(props.value.blocks);
+            setMark(now.mark)
         })
 
         const mouseUp = useCallbackRef((e:MouseEvent) => {
             document.removeEventListener('mousemove', mouseMove);
             document.removeEventListener('mouseup', mouseUp);
+            setMark({x: null, y: null})
             if(dragData.current.dragging) {
                 dragend.emit();
             }
         })
 
         return {
-            mouseDown
+            mouseDown,
+            mark
         }
     })()
 
@@ -315,6 +387,8 @@ const ReactVisualEditor:React.FC<{
                             onContextMenu={e => handler.onContextMenuBlock(e, block)}
                         ></Block>
                     ))}
+                    {blockDragger.mark.x!=null && <div className="react-visual-editor-mark-x" style={{left: `${blockDragger.mark.x}px`}}></div>}
+                    {blockDragger.mark.y!=null && <div className="react-visual-editor-mark-y" style={{top: `${blockDragger.mark.y}px`}}></div>}
                 </div>
             </div>
         </div>

@@ -18,6 +18,8 @@ const container = () => {
                     componentKey: 'text',
                     top: 100,
                     left: 100,
+                    width: 56,
+                    height: 22,
                     adjustPosition: false,
                     focus: false,
                     index: 0
@@ -26,6 +28,8 @@ const container = () => {
                     componentKey: 'button',
                     top: 200,
                     left: 200,
+                    width: 102,
+                    height: 32,
                     adjustPosition: false,
                     focus: true,
                     index: 0
@@ -34,6 +38,8 @@ const container = () => {
                     componentKey: 'input',
                     top: 300,
                     left: 300,
+                    width: 171,
+                    height: 32,
                     adjustPosition: false,
                     focus: true,
                     index: 0
@@ -42,6 +48,8 @@ const container = () => {
         }
         return val; 
     });
+    // console.log(style)
+    // debugger
 
     return (
         <div className="app-home">
