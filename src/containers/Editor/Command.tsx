@@ -115,13 +115,13 @@ export function useVisualCommand(
             const before = deepcopy(value.blocks);
             const after = deepcopy((() => {
                 const {focus, unfocus} = focusData;
-                const maxUnfocusIndex = unfocus.reduce((prev, cur) => Math.max(prev, cur.index), -Infinity);
-                const minFocusIndex = focus.reduce((prev, cur) => Math.min(prev, cur.index), Infinity);
+                const maxUnfocusIndex = unfocus.reduce((prev, cur) => Math.max(prev, cur.zindex), -Infinity);
+                const minFocusIndex = focus.reduce((prev, cur) => Math.min(prev, cur.zindex), Infinity);
 
                 let diff = maxUnfocusIndex - minFocusIndex;
                 if(diff >= 0) {
                     diff ++;
-                    focus.forEach(block => block.index = block.index + diff)
+                    focus.forEach(block => block.zindex = block.zindex + diff)
                 }
                 return value.blocks
             })())
@@ -148,17 +148,17 @@ export function useVisualCommand(
             const before = deepcopy(value.blocks);
             const after = deepcopy((() => {
                 const {focus, unfocus} = focusData;
-                const minUnfocusIndex = unfocus.reduce((prev, cur) => Math.min(prev, cur.index), Infinity);
-                const maxFocusIndex = focus.reduce((prev, cur) => Math.max(prev, cur.index), -Infinity);
-                const minFocusIndex = focus.reduce((prev, cur) => Math.min(prev, cur.index), Infinity);
+                const minUnfocusIndex = unfocus.reduce((prev, cur) => Math.min(prev, cur.zindex), Infinity);
+                const maxFocusIndex = focus.reduce((prev, cur) => Math.max(prev, cur.zindex), -Infinity);
+                const minFocusIndex = focus.reduce((prev, cur) => Math.min(prev, cur.zindex), Infinity);
 
                 let diff = maxFocusIndex - minUnfocusIndex;
                 if(diff >= 0) {
                     diff ++;
-                    focus.forEach(block => block.index = block.index - diff);
+                    focus.forEach(block => block.zindex = block.zindex - diff);
                     if(minFocusIndex - diff < 0) {
                         diff = diff - minFocusIndex;
-                        value.blocks.forEach(block => block.index = block.index + diff)
+                        value.blocks.forEach(block => block.zindex = block.zindex + diff)
                     }
                 }
                 return value.blocks

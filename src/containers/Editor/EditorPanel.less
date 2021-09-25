@@ -196,8 +196,67 @@
                     border: dashed 1px @primary;
                     content: '';
                 }
+
+                .editor-block-resize {
+                    @size: 4px;
+                    @offset: -4px;
+                    position: absolute;
+                    display: inline-block;
+                    width: @size;
+                    height: @size;
+                    background: @primary;
+                    z-index: 20;
+                    &.editor-block-resize-top-left {
+                        top: @offset;
+                        left: @offset;
+                        cursor: nw-resize;
+                    }
+                    &.editor-block-resize-top {
+                        top: @offset;
+                        left: calc(50% - @size / 2);
+                        cursor: n-resize;
+                    }
+                    &.editor-block-resize-top-right {
+                        top: @offset;
+                        right: @offset;
+                        cursor: ne-resize;
+                    }
+                    &.editor-block-resize-right {
+                        top: calc(50% - @size / 2);
+                        right: @offset;
+                        cursor: e-resize;
+                    }
+                    &.editor-block-resize-bottom-right {
+                        bottom: @offset;
+                        right: @offset;
+                        cursor: se-resize;
+                    }
+                    &.editor-block-resize-bottom {
+                        bottom: @offset;
+                        left: calc(50% - @size / 2);
+                        cursor: s-resize;
+                    }
+                    &.editor-block-resize-bottom-left {
+                        bottom: @offset;
+                        left: @offset;
+                        cursor: sw-resize;
+                    }
+                    &.editor-block-resize-left {
+                        top: calc(50% - @size / 2);
+                        left: @offset;
+                        cursor: w-resize;
+                    }
+                }
             }
         }
+    }
+
+    &:not(.react-visual-editor-preview) {
+        .react-visual-editor-block {
+            &>* {
+                transition: none;
+            }
+        } 
     }
 }
 .react-visual-editor-container {

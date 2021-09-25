@@ -17,9 +17,9 @@ export const Block:React.FC<{
             top: `${props.block.top}px`,
             left: `${props.block.left}px`,
             opacity: props.block.adjustPosition? '0' : '',
-            zIndex: props.block.index
+            zIndex: props.block.zindex
         }
-    }, [props.block.top, props.block.left, props.block.index, props.block.adjustPosition])
+    }, [props.block.top, props.block.left, props.block.zindex, props.block.adjustPosition])
 
     const classes = useMemo(() => {
         return classNames([
@@ -34,7 +34,18 @@ export const Block:React.FC<{
     let render:any;
 
     if(!!component) {
-        render = component.render();
+        render = component.render({
+            size: props.block.hasResize ? (() => {
+                let styles = {
+                    width: undefined as undefined | string,
+                    height: undefined as undefined | string
+                }
+                !!component.resize?.width && (styles.width = `${props.block.width}px`);
+                !!component.resize?.height && (styles.height = `${props.block.height}px`);
+
+                return styles;
+            })() : {}
+        });
     }
 
     
@@ -43,7 +54,6 @@ export const Block:React.FC<{
             const {top, left} = props.block;
             const {height, width} = elRef.current.getBoundingClientRect();
 
-            console.log(height, width)
             props.block.adjustPosition = false;
             props.block.top = top - height / 2;
             props.block.left = left - width / 2;
@@ -62,6 +72,7 @@ export const Block:React.FC<{
             onContextMenu={props.onContextMenu}
         >
             {render}
+            {props.children}
         </div>
     )
 }

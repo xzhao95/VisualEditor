@@ -7,9 +7,10 @@ export interface EditorBlock {
     left: number,
     width: number,
     height: number,
-    adjustPosition: boolean,
-    focus: boolean,
-    index: number
+    adjustPosition: boolean,    // block元素是否需要调整位置
+    focus: boolean,             // 当前是否选中
+    zindex: number,
+    hasResize: boolean         // 是否调整过大小
 }
 /**
  * 编辑器编辑的数据类型
@@ -28,7 +29,11 @@ export interface EditorComponent {
     key: string,
     name: string,
     preview: () => JSX.Element,
-    render: () => JSX.Element
+    render: (data: {size: {heght?: string, width?: string}}) => JSX.Element,
+    resize?: {
+        height?: boolean,
+        width?: boolean
+    }
 }
 
 /**
@@ -54,7 +59,8 @@ export function createVisualBlock(
         componentKey: component.key,
         adjustPosition: true,
         focus: false,
-        index: 0,
+        zindex: 0,
+        hasResize: false
     }
 }
 /**

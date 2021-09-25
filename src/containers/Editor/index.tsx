@@ -22,7 +22,8 @@ const container = () => {
                     height: 22,
                     adjustPosition: false,
                     focus: false,
-                    index: 0
+                    zindex: 0,
+                    hasResize: false
                 },
                 {
                     componentKey: 'button',
@@ -32,7 +33,8 @@ const container = () => {
                     height: 32,
                     adjustPosition: false,
                     focus: true,
-                    index: 0
+                    zindex: 0,
+                    hasResize: false
                 },
                 {
                     componentKey: 'input',
@@ -42,7 +44,8 @@ const container = () => {
                     height: 32,
                     adjustPosition: false,
                     focus: true,
-                    index: 0
+                    zindex: 0,
+                    hasResize: false
                 }
             ]
         }

@@ -11,6 +11,8 @@ import classNames from "classnames"
 import {$$dialog} from "../../service/dialog/$$dialog"
 import { notification } from "antd"
 import { $$dropdown, DropdownItem } from "../../service/dropdown/$$dropdown"
+import { BlockResize, BlockResizeDirection } from "../../component/BlockResize"
+import deepcopy from "deepcopy"
 
 const ReactVisualEditor:React.FC<{
     value: EditorValue,
@@ -216,7 +218,6 @@ const ReactVisualEditor:React.FC<{
                     }
                 })()
             }
-            console.log(block)
         })
 
         const mouseMove = useCallbackRef((e:MouseEvent) => {
@@ -282,6 +283,86 @@ const ReactVisualEditor:React.FC<{
         return {
             mouseDown,
             mark
+        }
+    })()
+
+    const resizeDragger = (() => {
+        const dragData = useRef({
+            block: {} as EditorBlock,
+            startX: 0,
+            startY: 0,
+            direction: {
+                horizontal: BlockResizeDirection.start,
+                vertical: BlockResizeDirection.start,
+            },
+            startBlock: {
+                top: 0,
+                left: 0,
+                height: 0,
+                width: 0,
+            },
+            dragging: false
+        })
+
+        const mouseDown = useCallbackRef((e: React.MouseEvent<HTMLDivElement>, direction: {horizontal: BlockResizeDirection, vertical: BlockResizeDirection}, block: EditorBlock) => {
+            e.stopPropagation();
+            document.addEventListener('mousemove', mouseMove);
+            document.addEventListener('mouseup', mouseUp);
+            dragData.current = {
+                block,
+                startX: e.clientX,
+                startY: e.clientY,
+                direction: direction,
+                startBlock: {
+                    ...deepcopy(block)
+                },
+                dragging: false
+            }
+        });
+        const mouseMove = useCallbackRef((e: MouseEvent) => {
+            if(!dragData.current.dragging) {
+                dragData.current.dragging = true;
+                dragstart.emit()
+            }
+            let {clientX, clientY} = e;
+            const {startX, startY, startBlock, block, direction} = dragData.current;
+
+            if(direction.horizontal == BlockResizeDirection.center) {
+                clientX = startX;
+            }
+
+            if(direction.vertical == BlockResizeDirection.center) {
+                clientY = startY;
+            }
+
+            let diffX = clientX - startX;
+            let diffY = clientY - startY;
+
+            if(direction.horizontal == BlockResizeDirection.start) {
+                diffX = -diffX;
+                block.left = startBlock.left - diffX
+            }
+            if(direction.vertical == BlockResizeDirection.start) {
+                diffY = -diffY;
+                block.top = startBlock.top - diffY;
+            }
+
+            block.width = startBlock.width + diffX;
+            block.height = startBlock.height + diffY;
+            block.hasResize = true;
+
+            methods.updateBlocks(props.value.blocks);
+        });
+        const mouseUp = useCallbackRef((e: MouseEvent) => {
+            document.removeEventListener('mousemove', mouseMove);
+            document.removeEventListener('mouseup', mouseUp);
+            if(dragData.current.dragging) {
+                dragend.emit();
+            }
+        });
+
+        return {
+            mouseDown
         }
     })()
 
@@ -385,7 +466,15 @@ const ReactVisualEditor:React.FC<{
                             config={props.config} 
                             onMouseDown={e => focusHandler.block(e, block)}
                             onContextMenu={e => handler.onContextMenuBlock(e, block)}
-                        ></Block>
+                        >
+                            {
+                                block.focus && 
+                                !!props.config.componentMap[block.componentKey] &&
+                                !!props.config.componentMap[block.componentKey].resize &&
+                                (!!props.config.componentMap[block.componentKey].resize?.width || !!props.config.componentMap[block.componentKey].resize?.height) &&
+                                <BlockResize component={props.config.componentMap[block.componentKey]} onMouseDown={(e, horizontal) => resizeDragger.mouseDown(e, horizontal, block)}></BlockResize>
+                            }
+                        </Block>
                     ))}
                     {blockDragger.mark.x!=null && <div className="react-visual-editor-mark-x" style={{left: `${blockDragger.mark.x}px`}}></div>}
                     {blockDragger.mark.y!=null && <div className="react-visual-editor-mark-y" style={{top: `${blockDragger.mark.y}px`}}></div>}
