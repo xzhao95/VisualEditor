@@ -242,7 +242,7 @@ export function useVisualCommand(
         placeTop: () => commander.state.commands.placeTop(),
         placeBottom: () => commander.state.commands.placeBottom(),
         clear: () => commander.state.commands.clear(),
-        updateValue: (newVal:string) => commander.state.commands.updateValue(newVal),
+        updateValue: (newVal:EditorValue) => commander.state.commands.updateValue(newVal),
         updateBlock: (newBlock: EditorBlock, oldBlock: EditorBlock) => commander.state.commands.updateBlock(newBlock, oldBlock),
     }
 }

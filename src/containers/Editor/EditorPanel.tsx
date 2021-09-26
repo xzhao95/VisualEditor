@@ -13,6 +13,7 @@ import { notification } from "antd"
 import { $$dropdown, DropdownItem } from "../../service/dropdown/$$dropdown"
 import { BlockResize, BlockResizeDirection } from "../../component/BlockResize"
 import deepcopy from "deepcopy"
+import EditorOperator from "./EditorOperator"
 
 const ReactVisualEditor:React.FC<{
     value: EditorValue,
@@ -27,8 +28,12 @@ const ReactVisualEditor:React.FC<{
     const [preview, setPreview] = useState(false);
     const [editing, setEditing] = useState(false);
 
+    const [selectBlockIndex, setSelectBlockIndex] = useState(-1);
+
     const [dragstart] = useState(() => createEvent());
     const [dragend] = useState(() => createEvent());
+
+    const selectBlock = useMemo(() => props.value.blocks[selectBlockIndex] as EditorBlock | undefined, [selectBlockIndex])
 
     const classes = useMemo(() => {
         return classNames([
@@ -132,7 +137,7 @@ const ReactVisualEditor:React.FC<{
     })()
 
     const focusHandler = (() => {
-        const blockMouseDown = (e:React.MouseEvent<HTMLDivElement>, block: EditorBlock) => {
+        const blockMouseDown = (e:React.MouseEvent<HTMLDivElement>, block: EditorBlock, index: number) => {
             if(preview) return;
             if(e.button == 2) return
             if(e.shiftKey) {
@@ -149,6 +154,7 @@ const ReactVisualEditor:React.FC<{
                 }
             }
 
+            setSelectBlockIndex(block.focus ? index : -1)
             setTimeout(() => blockDragger.mouseDown(e, block))
         }
 
@@ -158,6 +164,7 @@ const ReactVisualEditor:React.FC<{
             }
             if(!e.shiftKey) {
                 methods.clearFocus()
+                setSelectBlockIndex(-1)
             }
         }
 
@@ -487,7 +494,7 @@ const ReactVisualEditor:React.FC<{
                     )
                 })}
             </div>
-            <div className="react-visual-editor-operator">operator</div>
+            <EditorOperator value={props.value} selectBlock={selectBlock} updateValue={commander.updateValue} updateBlock={commander.updateBlock}/>
             <div className="react-visual-editor-body" ref={bodyRef}>
                 <div className="react-visual-editor-container" style={containerStyles} ref={containerRef} onMouseDown={focusHandler.container}>
                     {props.value.blocks.map((block, index) => (
@@ -495,7 +502,7 @@ const ReactVisualEditor:React.FC<{
                             key={index} 
                             block={block} 
                             config={props.config} 
-                            onMouseDown={e => focusHandler.block(e, block)}
+                            onMouseDown={e => focusHandler.block(e, block, index)}
                             onContextMenu={e => handler.onContextMenuBlock(e, block)}
                         >
                             {
