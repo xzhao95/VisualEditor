@@ -1,3 +1,5 @@
+import { EditorProps } from "./Props";
+
 /**
  * 容器内每个元素的数据类型
  */
@@ -11,6 +13,7 @@ export interface EditorBlock {
     focus: boolean,             // 当前是否选中
     zindex: number,
     hasResize: boolean         // 是否调整过大小
+    props?: Record<string, any>
 }
 /**
  * 编辑器编辑的数据类型
@@ -29,11 +32,12 @@ export interface EditorComponent {
     key: string,
     name: string,
     preview: () => JSX.Element,
-    render: (data: {size: {heght?: string, width?: string}}) => JSX.Element,
+    render: (data: {size: {heght?: string, width?: string}, props: Record<string, any>}) => JSX.Element,
     resize?: {
         height?: boolean,
         width?: boolean
-    }
+    },
+    props?: {[k: string]: EditorProps}
 }
 
 /**
@@ -77,7 +81,16 @@ export function createEditorConfig() {
      * 注册组件
      * @param key 组件的key 
      */
-    function registryComponent(key: string, option: Omit<EditorComponent, 'key'>) {
+    function registryComponent<Props extends {[k: string]: EditorProps}>(key: string, option: {
+        name: string,
+        preview: () => JSX.Element,
+        render: (data: {size: {heght?: string, width?: string}, props: Record<string, any>}) => JSX.Element,
+        resize?: {
+            height?: boolean,
+            width?: boolean
+        }
+        props?: Props
+    }) {
         if(componentMap[key]) {
             const index = componentArray.indexOf(componentMap[key]);
             componentArray.splice(index, 1);
@@ -86,8 +99,8 @@ export function createEditorConfig() {
             key,
             ...option
         }
-        componentArray.push(newComponent);
-        componentMap[key] = newComponent;
+        componentArray.push(newComponent as any);
+        componentMap[key] = newComponent as any;
     }
     return {
         componentMap,

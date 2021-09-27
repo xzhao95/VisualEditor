@@ -44,7 +44,8 @@ export const Block:React.FC<{
                 !!component.resize?.height && (styles.height = `${props.block.height}px`);
 
                 return styles;
-            })() : {}
+            })() : {},
+            props: props.block.props || {}
         });
     }
 

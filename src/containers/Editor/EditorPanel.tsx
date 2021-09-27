@@ -33,7 +33,7 @@ const ReactVisualEditor:React.FC<{
     const [dragstart] = useState(() => createEvent());
     const [dragend] = useState(() => createEvent());
 
-    const selectBlock = useMemo(() => props.value.blocks[selectBlockIndex] as EditorBlock | undefined, [selectBlockIndex])
+    const selectBlock = useMemo(() => props.value.blocks[selectBlockIndex] as EditorBlock | undefined, [props.value.blocks, selectBlockIndex])
 
     const classes = useMemo(() => {
         return classNames([
@@ -494,7 +494,7 @@ const ReactVisualEditor:React.FC<{
                     )
                 })}
             </div>
-            <EditorOperator value={props.value} selectBlock={selectBlock} updateValue={commander.updateValue} updateBlock={commander.updateBlock}/>
+            <EditorOperator value={props.value} selectBlock={selectBlock} config={props.config} updateValue={commander.updateValue} updateBlock={commander.updateBlock}/>
             <div className="react-visual-editor-body" ref={bodyRef}>
                 <div className="react-visual-editor-container" style={containerStyles} ref={containerRef} onMouseDown={focusHandler.container}>
                     {props.value.blocks.map((block, index) => (

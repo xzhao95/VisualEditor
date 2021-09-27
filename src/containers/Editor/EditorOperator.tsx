@@ -1,12 +1,15 @@
-import { Button, Form, Input, InputNumber } from 'antd';
+import { Button, Form, Input, InputNumber, Select } from 'antd';
 import { useForm } from 'antd/lib/form/Form';
 import deepcopy from 'deepcopy';
 import React, { useEffect, useState } from 'react';
-import { EditorBlock, EditorValue } from './Utils';
+import { SketchPicker } from 'react-color'
+import { EditorProps, PropsType } from './Props';
+import { EditorBlock, EditorConfig, EditorValue } from './Utils';
 
 const EditorOperator:React.FC<{
     selectBlock: EditorBlock | undefined,
     value: EditorValue,
+    config: EditorConfig,
     updateValue: (newVal: EditorValue) => void,
     updateBlock: (newBlock: EditorBlock, oldBlock: EditorBlock) => void
 }> = (props) => {
@@ -28,8 +31,15 @@ const EditorOperator:React.FC<{
                 <InputNumber step={100} min={0} precision={0}></InputNumber>
             </Form.Item>
         ))
-    }else {
-
+    }else { 
+        const component = props.config.componentMap[props.selectBlock.componentKey];
+        if(component) {
+            render.push(
+                ...Object.entries(component.props || {})
+                    .map(([propName, propConfig]) => renderBlockOperator(propName, propConfig))
+            )
+        }
+        
     }
 
     const methods = {
@@ -40,12 +50,13 @@ const EditorOperator:React.FC<{
             }else {
                 data = deepcopy(props.value.container);
             }
+            setEditData(data)
             form.resetFields();
             form.setFieldsValue(data);
         },
         apply: () => {
             if(!!props.selectBlock) {
-                props.updateBlock(editData, props.selectBlock);
+                props.updateBlock(deepcopy(editData), props.selectBlock);
             }else {
                 props.updateValue({
                     ...props.value,
@@ -76,6 +87,36 @@ const EditorOperator:React.FC<{
             </Form>
         </div>
     )
+}
+
+function renderBlockOperator(propName:string, propConfig:EditorProps) {
+    switch(propConfig.type) {
+        case PropsType.text:
+            return (
+                <Form.Item label={propConfig.name} name={['props', propName]} key={propName}>
+                    <Input></Input>
+                </Form.Item>
+            )
+        case PropsType.select:
+            return (
+                <Form.Item label={propConfig.name} name={['props', propName]} key={propName}>
+                    <Select>
+                        {propConfig.options.map((opt, index) => (
+                            <Select.Option value={opt.value} key={index}>{opt.label}</Select.Option>
+                        ))}
+                    </Select>
+                </Form.Item>
+            )
+        case PropsType.color:
+            return (
+                <Form.Item label={propConfig.name} name={['props', propName]} key={propName} valuePropName="color">
+                    <SketchPicker></SketchPicker>
+                </Form.Item>
+            )
+        default: 
+            return (<div>error</div>)
+    }
+    
 }
 
 export default EditorOperator;
