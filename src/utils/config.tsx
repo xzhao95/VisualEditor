@@ -1,7 +1,7 @@
 import React from "react";
-import {Button, Input} from "antd"
+import {Button, Input, Select} from "antd"
 import { createEditorConfig } from "../containers/Editor/Utils";
-import { createColorProp, createSelectProp, createTextProps } from "../containers/Editor/Props";
+import { createColorProp, createSelectProp, createTableProp, createTextProps } from "../containers/Editor/Props";
 
 export const visualConfig = createEditorConfig();
 
@@ -47,5 +47,33 @@ visualConfig.registryComponent('input', {
     render: ({size}) => <Input  style={size}/>,
     resize: {
         width: true
+    }
+})
+
+visualConfig.registryComponent('select', {
+    name: '下拉框',
+    preview: () => (
+        <Select value={123} style={{width: '150px'}}>
+            <Select.Option value={123}>泡芙</Select.Option>
+        </Select>
+    ),
+    render: ({props, size}) => (
+        <Select
+            key={(props.options || []).map(({label, value}:{label:string, value: string}) => `${label}_${value}`).join('-')}
+            style={{width: size.width || '150px'}}
+        >
+            {(props.options || []).map((opt:any, index:number) => (
+                <Select.Option value={opt.value} key={index}>{opt.label}</Select.Option>
+            ))}
+        </Select>
+    ),
+    resize: {
+        width: true
+    },
+    props: {
+        options: createTableProp('下拉选项', 'label', [
+            {label: '显示值', field: 'label'},
+            {label: '绑定值', field: 'value'}
+        ])
     }
 })

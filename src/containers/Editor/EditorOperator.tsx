@@ -3,6 +3,7 @@ import { useForm } from 'antd/lib/form/Form';
 import deepcopy from 'deepcopy';
 import React, { useEffect, useState } from 'react';
 import { SketchPicker } from 'react-color'
+import { TabelPropEditor } from '../../component/TablePropEditor';
 import { EditorProps, PropsType } from './Props';
 import { EditorBlock, EditorConfig, EditorValue } from './Utils';
 
@@ -67,6 +68,7 @@ const EditorOperator:React.FC<{
             }
         },
         onFormValueChange: (changeValues: any, values: any) => {
+            console.log(values)
             setEditData({
                 ...editData,
                 ...values
@@ -111,6 +113,13 @@ function renderBlockOperator(propName:string, propConfig:EditorProps) {
             return (
                 <Form.Item label={propConfig.name} name={['props', propName]} key={propName} valuePropName="color">
                     <SketchPicker></SketchPicker>
+                </Form.Item>
+            )
+
+        case PropsType.table:
+            return (
+                <Form.Item label={propConfig.name} name={['props', propName]} key={propName}>
+                    <TabelPropEditor config={propConfig} ></TabelPropEditor>
                 </Form.Item>
             )
         default: 

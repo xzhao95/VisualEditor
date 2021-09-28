@@ -1,10 +1,11 @@
 export enum PropsType {
     text = 'text',
     select = 'select',
-    color = 'color'
+    color = 'color',
+    table = 'table'
 }
 
-export type EditorProps = EditorTextProp | EditorColorProps | EditorSelectProps;
+export type EditorProps = EditorTextProp | EditorColorProps | EditorSelectProps | EditorTableProps;
 
 /*----------------------------------text-------------------------------------*/
 interface EditorTextProp {
@@ -47,5 +48,25 @@ export function createSelectProp(name: string, options: {label: string,value: st
         name,
         options,
         type: PropsType.select
+    }
+}
+
+/*----------------------------------table-------------------------------------*/
+export interface EditorTableProps {
+    name: string,
+    showField: string,
+    column: {
+        label: string,
+        field: string
+    }[],
+    type: PropsType.table
+}
+
+export function createTableProp(name: string, showField: string, column: {label: string,field: string}[]): EditorProps {
+    return {
+        name,
+        showField,
+        column,
+        type: PropsType.table
     }
 }

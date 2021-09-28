@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/xzhao95/VisualEditor#readme",
   "dependencies": {
+    "@ant-design/icons": "^4.7.0",
     "@babel/core": "^7.15.0",
     "@types/react-color": "^3.0.5",
     "antd": "^4.16.13",
