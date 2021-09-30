@@ -10,8 +10,8 @@ export const Block:React.FC<{
     customProps: Record<string, Record<string, any>>
     customChildren: Record<string, undefined | (() => any)>
     onFormDataChange: (val: any) => void
-    onMouseDown: (e:React.MouseEvent<HTMLDivElement>)=>void,
-    onContextMenu: (e:React.MouseEvent<HTMLElement>) => void
+    onMouseDown?: (e:React.MouseEvent<HTMLDivElement>)=>void,
+    onContextMenu?: (e:React.MouseEvent<HTMLElement>) => void
 }> = (props) => {
     const elRef = useRef({} as HTMLDivElement)
     const {forceUpdate} = useUpdate();

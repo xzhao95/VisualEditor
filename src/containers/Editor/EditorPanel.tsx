@@ -9,7 +9,7 @@ import { useVisualCommand } from "./Command"
 import { createEvent } from "../../plugin/event"
 import classNames from "classnames"
 import {$$dialog} from "../../service/dialog/$$dialog"
-import { notification } from "antd"
+import { Button, notification } from "antd"
 import { $$dropdown, DropdownItem } from "../../service/dropdown/$$dropdown"
 import { BlockResize, BlockResizeDirection } from "../../component/BlockResize"
 import deepcopy from "deepcopy"
@@ -451,7 +451,7 @@ const ReactVisualEditor:React.FC<{
         {label: "置底", icon: "icon-control-bottom", handler: commander.placeBottom},
         {label: "删除", icon: "icon-shanchu", handler: commander.delete},
         {label: "清空", icon: "icon-huanyuan", handler: commander.clear},
-        {label: "关闭", icon: "icon-guanbi", handler: () => {}}
+        {label: "关闭", icon: "icon-guanbi", handler: () => {setEditing(false)}}
     ]
 
     const handler = {
@@ -472,35 +472,10 @@ const ReactVisualEditor:React.FC<{
     }
 
     return (
-        <div className={classes}>
-            <div className="react-visual-editor-menu">
-                {props.config.componentArray.map((component, index) => (
-                    <div className="react-visual-editor-menu-item" key={index} 
-                        draggable={true} 
-                        onDragStart={(e) => menuDragger.dragstart(e, component)} 
-                        onDragEnd={menuDragger.dragend}>
-                        {component.preview()}
-                        <div className="react-visual-editor-menu-item-name">
-                            {component.name}
-                        </div>
-                    </div>
-                ))}
-            </div>
-            <div className="react-visual-editor-head">
-                {buttons.map((btn, index) => {
-                    const icon = typeof btn.icon == 'function' ? btn.icon() : btn.icon;
-                    const label = typeof btn.label == 'function' ? btn.label() : btn.label;
-                    return (
-                        <div className="react-visual-editor-head-btn" key={index} onClick={btn.handler}>
-                            <i className={`iconfont ${icon}`}></i>
-                            <span>{label}</span>
-                        </div>
-                    )
-                })}
-            </div>
-            <EditorOperator value={props.value} selectBlock={selectBlock} config={props.config} updateValue={commander.updateValue} updateBlock={commander.updateBlock}/>
-            <div className="react-visual-editor-body" ref={bodyRef}>
-                <div className="react-visual-editor-container" style={containerStyles} ref={containerRef} onMouseDown={focusHandler.container}>
+        <>
+        { !editing ? 
+            <div className="react-visual-editor-container ">
+                <div className="react-visual-editor-container" style={containerStyles} ref={containerRef}>
                     {JSON.stringify(props.formData)}
                     {props.value.blocks.map((block, index) => (
                         <Block 
@@ -511,23 +486,70 @@ const ReactVisualEditor:React.FC<{
                             customProps={props.customProps}
                             customChildren={props.children}
                             onFormDataChange={props.onFormDataChange}
-                            onMouseDown={e => focusHandler.block(e, block, index)}
-                            onContextMenu={e => handler.onContextMenuBlock(e, block)}
                         >
-                            {
-                                block.focus && 
-                                !!props.config.componentMap[block.componentKey] &&
-                                !!props.config.componentMap[block.componentKey].resize &&
-                                (!!props.config.componentMap[block.componentKey].resize?.width || !!props.config.componentMap[block.componentKey].resize?.height) &&
-                                <BlockResize component={props.config.componentMap[block.componentKey]} onMouseDown={(e, horizontal) => resizeDragger.mouseDown(e, horizontal, block)}></BlockResize>
-                            }
                         </Block>
                     ))}
-                    {blockDragger.mark.x!=null && <div className="react-visual-editor-mark-x" style={{left: `${blockDragger.mark.x}px`}}></div>}
-                    {blockDragger.mark.y!=null && <div className="react-visual-editor-mark-y" style={{top: `${blockDragger.mark.y}px`}}></div>}
+                </div>
+                <Button className="react-visual-editor-enter-btn" onClick={() => setEditing(true)}>进入编辑</Button>
+            </div> :
+            <div className={classes}>
+                <div className="react-visual-editor-menu">
+                    {props.config.componentArray.map((component, index) => (
+                        <div className="react-visual-editor-menu-item" key={index} 
+                            draggable={true} 
+                            onDragStart={(e) => menuDragger.dragstart(e, component)} 
+                            onDragEnd={menuDragger.dragend}>
+                            {component.preview()}
+                            <div className="react-visual-editor-menu-item-name">
+                                {component.name}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+                <div className="react-visual-editor-head">
+                    {buttons.map((btn, index) => {
+                        const icon = typeof btn.icon == 'function' ? btn.icon() : btn.icon;
+                        const label = typeof btn.label == 'function' ? btn.label() : btn.label;
+                        return (
+                            <div className="react-visual-editor-head-btn" key={index} onClick={btn.handler}>
+                                <i className={`iconfont ${icon}`}></i>
+                                <span>{label}</span>
+                            </div>
+                        )
+                    })}
+                </div>
+                <EditorOperator value={props.value} selectBlock={selectBlock} config={props.config} updateValue={commander.updateValue} updateBlock={commander.updateBlock}/>
+                <div className="react-visual-editor-body" ref={bodyRef}>
+                    <div className="react-visual-editor-container" style={containerStyles} ref={containerRef} onMouseDown={focusHandler.container}>
+                        {JSON.stringify(props.formData)}
+                        {props.value.blocks.map((block, index) => (
+                            <Block 
+                                key={index} 
+                                block={block} 
+                                config={props.config} 
+                                formData={props.formData}
+                                customProps={props.customProps}
+                                customChildren={props.children}
+                                onFormDataChange={props.onFormDataChange}
+                                onMouseDown={e => focusHandler.block(e, block, index)}
+                                onContextMenu={e => handler.onContextMenuBlock(e, block)}
+                            >
+                                {
+                                    block.focus && 
+                                    !!props.config.componentMap[block.componentKey] &&
+                                    !!props.config.componentMap[block.componentKey].resize &&
+                                    (!!props.config.componentMap[block.componentKey].resize?.width || !!props.config.componentMap[block.componentKey].resize?.height) &&
+                                    <BlockResize component={props.config.componentMap[block.componentKey]} onMouseDown={(e, horizontal) => resizeDragger.mouseDown(e, horizontal, block)}></BlockResize>
+                                }
+                            </Block>
+                        ))}
+                        {blockDragger.mark.x!=null && <div className="react-visual-editor-mark-x" style={{left: `${blockDragger.mark.x}px`}}></div>}
+                        {blockDragger.mark.y!=null && <div className="react-visual-editor-mark-y" style={{top: `${blockDragger.mark.y}px`}}></div>}
+                    </div>
                 </div>
             </div>
-        </div>
+        }
+        </>
     )
 }
 
