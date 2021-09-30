@@ -8,6 +8,7 @@ export const Block:React.FC<{
     config: EditorConfig,
     formData: any,
     customProps: Record<string, Record<string, any>>
+    customChildren: Record<string, undefined | (() => any)>
     onFormDataChange: (val: any) => void
     onMouseDown: (e:React.MouseEvent<HTMLDivElement>)=>void,
     onContextMenu: (e:React.MouseEvent<HTMLElement>) => void
@@ -36,7 +37,9 @@ export const Block:React.FC<{
     const component = props.config.componentMap[props.block.componentKey];
     let render:any;
 
-    if(!!component) {
+    if(!!props.block.slotName && !!props.customChildren[props.block.slotName]) {
+        render = props.customChildren[props.block.slotName]!()
+    }else if(!!component) {
         render = component.render({
             block: props.block,
             size: props.block.hasResize ? (() => {

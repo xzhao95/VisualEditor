@@ -21,7 +21,8 @@ const ReactVisualEditor:React.FC<{
     customProps: Record<string, Record<string, any>>,
     onFormDataChange: (val:any) => void,
     onChange: (val: EditorValue) => void,
-    config: EditorConfig
+    config: EditorConfig,
+    children: Record<string, undefined | (() => any)>
 }> = (props) => {
     // console.log(props);
 
@@ -508,6 +509,7 @@ const ReactVisualEditor:React.FC<{
                             config={props.config} 
                             formData={props.formData}
                             customProps={props.customProps}
+                            customChildren={props.children}
                             onFormDataChange={props.onFormDataChange}
                             onMouseDown={e => focusHandler.block(e, block, index)}
                             onContextMenu={e => handler.onContextMenuBlock(e, block)}

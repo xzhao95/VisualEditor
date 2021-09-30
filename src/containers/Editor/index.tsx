@@ -79,7 +79,11 @@ const container = () => {
                 customProps={customProps}
                 onFormDataChange={setFormData}
                 onChange={setEditorValue}
-            ></ReactVisualEditor>
+            >
+                {{
+                    buttonComponent: formData.username.length < 5 ? () => <button /> : undefined
+                }}
+            </ReactVisualEditor>
         </div>
     )
 }
