@@ -37,6 +37,7 @@ export const Block:React.FC<{
 
     if(!!component) {
         render = component.render({
+            block: props.block,
             size: props.block.hasResize ? (() => {
                 let styles = {
                     width: undefined as undefined | string,

@@ -54,7 +54,9 @@ const container = () => {
 
     const [formData, setFormData] = useState({
         username: 'zyt',
-        age: '18'
+        age: '18',
+        maxLevel: 100,
+        minLevel: 50
     })
 
     return (

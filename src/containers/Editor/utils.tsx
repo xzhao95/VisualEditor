@@ -33,7 +33,12 @@ export interface EditorComponent {
     key: string,
     name: string,
     preview: () => JSX.Element,
-    render: (data: {size: {heght?: string, width?: string}, props: Record<string, any>, model:  Record<string, {value: any, onChange: (val:any) => void}>}) => JSX.Element,
+    render: (data: {
+        block: EditorBlock,
+        size: {heght?: string, width?: string}, 
+        props: Record<string, any>, 
+        model:  Record<string, {value: any, onChange: (val:any) => void}>
+    }) => JSX.Element,
     resize?: {
         height?: boolean,
         width?: boolean
@@ -90,7 +95,12 @@ export function createEditorConfig() {
     >(key: string, option: {
         name: string,
         preview: () => JSX.Element,
-        render: (data: {size: {heght?: string, width?: string}, props: Record<string, any>, model: Record<string, {value: any, onChange: (val:any) => void}>}) => JSX.Element,
+        render: (data: {
+            block: EditorBlock,
+            size: {heght?: string, width?: string}, 
+            props: Record<string, any>, 
+            model: Record<string, {value: any, onChange: (val:any) => void}>
+        }) => JSX.Element,
         resize?: {
             height?: boolean,
             width?: boolean

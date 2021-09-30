@@ -2,6 +2,7 @@ import React from "react";
 import {Button, Input, Select} from "antd"
 import { createEditorConfig } from "../containers/Editor/Utils";
 import { createColorProp, createSelectProp, createTableProp, createTextProps } from "../containers/Editor/Props";
+import { NumberRange } from "../component/NumberRange";
 
 export const visualConfig = createEditorConfig();
 
@@ -83,5 +84,34 @@ visualConfig.registryComponent('select', {
     },
     model: {
         default:  '绑定值'
+    }
+})
+
+visualConfig.registryComponent('number-range', {
+    name: '范围输入框',
+    preview: () => (<div style={{textAlign: 'center'}}>
+        <NumberRange width="200px"></NumberRange>
+    </div>),
+    render: ({size, props, model, block}) => (
+        <NumberRange 
+            key={(() => {
+                const model = block.model || {}
+                return  (model.start || '@@start' + (model.end || '@@end'))
+            })()}
+            width={size.width}
+            {...{
+                start: model.start.value,
+                end: model.end.value,
+                onStartChange: model.start.onChange,
+                onEndChange: model.end.onChange
+            }}
+        ></NumberRange>
+    ),
+    resize: {
+        width: true
+    },
+    model: {
+        start: '开始绑定值',
+        end: '结束绑定值'
     }
 })
