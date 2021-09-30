@@ -6,6 +6,8 @@ import { EditorBlock, EditorConfig } from "./Utils";
 export const Block:React.FC<{
     block: EditorBlock,
     config: EditorConfig,
+    formData: any,
+    onFormDataChange: (val: any) => void
     onMouseDown: (e:React.MouseEvent<HTMLDivElement>)=>void,
     onContextMenu: (e:React.MouseEvent<HTMLElement>) => void
 }> = (props) => {
@@ -45,7 +47,32 @@ export const Block:React.FC<{
 
                 return styles;
             })() : {},
-            props: props.block.props || {}
+            props: props.block.props || {},
+            model: Object.entries(component.model || {}).reduce((prev, item) => {
+                const [modelProp, modelName] = item;
+                const bindField = (props.block.model|| {})[modelProp];
+                prev[modelProp] = {
+                    value: !bindField ? null : props.formData[bindField],
+                    onChange: (e) => {
+                        if(!bindField) return;
+                        let val:any;
+                        if(!e) {
+                            val = e;
+                        }else {
+                            if(typeof e === 'object' && 'target' in e) {
+                                val = e.target.value
+                            }else {
+                                val = e
+                            }
+                        }
+                        props.onFormDataChange({
+                            ...props.formData,
+                            [bindField]: val
+                        });
+                    }
+                }
+                return prev
+            }, {} as Record<string, {value: any, onChange: (val:any) => void}>)
         });
     }
 

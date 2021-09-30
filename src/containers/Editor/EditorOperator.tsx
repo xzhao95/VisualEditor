@@ -39,6 +39,14 @@ const EditorOperator:React.FC<{
                 ...Object.entries(component.props || {})
                     .map(([propName, propConfig]) => renderBlockOperator(propName, propConfig))
             )
+            render.push(
+                ...Object.entries(component.model || {})
+                    .map(([modelName, modelLabel]) => (
+                        <Form.Item label={modelLabel} name={['model', modelName]} key={modelName}>
+                            <Input></Input>
+                        </Form.Item>
+                    ))
+            )
         }
         
     }
@@ -68,7 +76,6 @@ const EditorOperator:React.FC<{
             }
         },
         onFormValueChange: (changeValues: any, values: any) => {
-            console.log(values)
             setEditData({
                 ...editData,
                 ...values

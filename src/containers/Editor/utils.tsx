@@ -13,7 +13,8 @@ export interface EditorBlock {
     focus: boolean,             // 当前是否选中
     zindex: number,
     hasResize: boolean         // 是否调整过大小
-    props?: Record<string, any>
+    props?: Record<string, any>,
+    model?: Record<string, string>
 }
 /**
  * 编辑器编辑的数据类型
@@ -32,12 +33,13 @@ export interface EditorComponent {
     key: string,
     name: string,
     preview: () => JSX.Element,
-    render: (data: {size: {heght?: string, width?: string}, props: Record<string, any>}) => JSX.Element,
+    render: (data: {size: {heght?: string, width?: string}, props: Record<string, any>, model:  Record<string, {value: any, onChange: (val:any) => void}>}) => JSX.Element,
     resize?: {
         height?: boolean,
         width?: boolean
     },
-    props?: {[k: string]: EditorProps}
+    props?: {[k: string]: EditorProps},
+    model?: {[k: string]: string}
 }
 
 /**
@@ -64,7 +66,7 @@ export function createVisualBlock(
         adjustPosition: true,
         focus: false,
         zindex: 0,
-        hasResize: false
+        hasResize: false,
     }
 }
 /**
@@ -81,15 +83,20 @@ export function createEditorConfig() {
      * 注册组件
      * @param key 组件的key 
      */
-    function registryComponent<Props extends {[k: string]: EditorProps}>(key: string, option: {
+    function registryComponent<_,
+        Props extends {[k: string]: EditorProps},
+        Model extends {[k: string]: string},
+        __
+    >(key: string, option: {
         name: string,
         preview: () => JSX.Element,
-        render: (data: {size: {heght?: string, width?: string}, props: Record<string, any>}) => JSX.Element,
+        render: (data: {size: {heght?: string, width?: string}, props: Record<string, any>, model: Record<string, {value: any, onChange: (val:any) => void}>}) => JSX.Element,
         resize?: {
             height?: boolean,
             width?: boolean
         }
-        props?: Props
+        props?: Props,
+        model?: Model
     }) {
         if(componentMap[key]) {
             const index = componentArray.indexOf(componentMap[key]);

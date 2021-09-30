@@ -51,12 +51,21 @@ const container = () => {
         }
         return val; 
     });
-    // console.log(style)
-    // debugger
+
+    const [formData, setFormData] = useState({
+        username: 'zyt',
+        age: '18'
+    })
 
     return (
         <div className="app-home">
-            <ReactVisualEditor config={visualConfig} value={editorValue} onChange={setEditorValue}></ReactVisualEditor>
+            <ReactVisualEditor 
+                config={visualConfig} 
+                value={editorValue} 
+                formData={formData}
+                onFormDataChange={setFormData}
+                onChange={setEditorValue}
+            ></ReactVisualEditor>
         </div>
     )
 }

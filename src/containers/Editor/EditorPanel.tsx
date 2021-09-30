@@ -17,6 +17,8 @@ import EditorOperator from "./EditorOperator"
 
 const ReactVisualEditor:React.FC<{
     value: EditorValue,
+    formData: any,
+    onFormDataChange: (val:any) => void,
     onChange: (val: EditorValue) => void,
     config: EditorConfig
 }> = (props) => {
@@ -497,11 +499,14 @@ const ReactVisualEditor:React.FC<{
             <EditorOperator value={props.value} selectBlock={selectBlock} config={props.config} updateValue={commander.updateValue} updateBlock={commander.updateBlock}/>
             <div className="react-visual-editor-body" ref={bodyRef}>
                 <div className="react-visual-editor-container" style={containerStyles} ref={containerRef} onMouseDown={focusHandler.container}>
+                    {JSON.stringify(props.formData)}
                     {props.value.blocks.map((block, index) => (
                         <Block 
                             key={index} 
                             block={block} 
                             config={props.config} 
+                            formData={props.formData}
+                            onFormDataChange={props.onFormDataChange}
                             onMouseDown={e => focusHandler.block(e, block, index)}
                             onContextMenu={e => handler.onContextMenuBlock(e, block)}
                         >

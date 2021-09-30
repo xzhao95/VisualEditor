@@ -44,9 +44,12 @@ visualConfig.registryComponent('button', {
 visualConfig.registryComponent('input', {
     name: '输入框',
     preview: () => <Input />,
-    render: ({size}) => <Input  style={size}/>,
+    render: ({size, model}) => <Input style={size} value={model.default.value} onChange={model.default.onChange}/>,
     resize: {
         width: true
+    },
+    model: {
+        default: "绑定值"
     }
 })
 
@@ -57,10 +60,12 @@ visualConfig.registryComponent('select', {
             <Select.Option value={123}>泡芙</Select.Option>
         </Select>
     ),
-    render: ({props, size}) => (
+    render: ({props, size, model}) => (
         <Select
             key={(props.options || []).map(({label, value}:{label:string, value: string}) => `${label}_${value}`).join('-')}
             style={{width: size.width || '150px'}}
+            value={model.default.value}
+            onChange={model.default.onChange}
         >
             {(props.options || []).map((opt:any, index:number) => (
                 <Select.Option value={opt.value} key={index}>{opt.label}</Select.Option>
@@ -75,5 +80,8 @@ visualConfig.registryComponent('select', {
             {label: '显示值', field: 'label'},
             {label: '绑定值', field: 'value'}
         ])
+    },
+    model: {
+        default:  '绑定值'
     }
 })
