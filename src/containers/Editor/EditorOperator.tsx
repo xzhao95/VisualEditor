@@ -36,6 +36,11 @@ const EditorOperator:React.FC<{
         const component = props.config.componentMap[props.selectBlock.componentKey];
         if(component) {
             render.push(
+                <Form.Item label="组件标识" name="slotName" key="slotName">
+                    <Input></Input>
+                </Form.Item>
+            )
+            render.push(
                 ...Object.entries(component.props || {})
                     .map(([propName, propConfig]) => renderBlockOperator(propName, propConfig))
             )

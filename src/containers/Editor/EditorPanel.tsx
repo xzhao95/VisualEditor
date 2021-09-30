@@ -18,6 +18,7 @@ import EditorOperator from "./EditorOperator"
 const ReactVisualEditor:React.FC<{
     value: EditorValue,
     formData: any,
+    customProps: Record<string, Record<string, any>>,
     onFormDataChange: (val:any) => void,
     onChange: (val: EditorValue) => void,
     config: EditorConfig
@@ -506,6 +507,7 @@ const ReactVisualEditor:React.FC<{
                             block={block} 
                             config={props.config} 
                             formData={props.formData}
+                            customProps={props.customProps}
                             onFormDataChange={props.onFormDataChange}
                             onMouseDown={e => focusHandler.block(e, block, index)}
                             onContextMenu={e => handler.onContextMenuBlock(e, block)}

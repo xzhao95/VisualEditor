@@ -14,7 +14,8 @@ export interface EditorBlock {
     zindex: number,
     hasResize: boolean         // 是否调整过大小
     props?: Record<string, any>,
-    model?: Record<string, string>
+    model?: Record<string, string>,
+    slotName?: string
 }
 /**
  * 编辑器编辑的数据类型
@@ -38,13 +39,15 @@ export interface EditorComponent {
         size: {heght?: string, width?: string}, 
         props: Record<string, any>, 
         model:  Record<string, {value: any, onChange: (val:any) => void}>
+        custom: Record<string, any>
     }) => JSX.Element,
     resize?: {
         height?: boolean,
         width?: boolean
     },
     props?: {[k: string]: EditorProps},
-    model?: {[k: string]: string}
+    model?: {[k: string]: string},
+    slotName?: string
 }
 
 /**
@@ -100,6 +103,7 @@ export function createEditorConfig() {
             size: {heght?: string, width?: string}, 
             props: Record<string, any>, 
             model: Record<string, {value: any, onChange: (val:any) => void}>
+            custom: Record<string, any>
         }) => JSX.Element,
         resize?: {
             height?: boolean,

@@ -5,6 +5,7 @@ import { EditorValue } from "./Utils";
 import ReactVisualEditor from './EditorPanel'
 import style from './EditorPanel.less'
 import './EditorPanel.less'
+import { notification } from "antd";
 
 const container = () => {
     const [editorValue, setEditorValue] = useState(() => {
@@ -59,12 +60,23 @@ const container = () => {
         minLevel: 50
     })
 
+    const customProps = {
+        buttonComponent: {
+            onClick: () => {
+                notification.open({
+                    message: 'click custom'
+                })
+            }
+        }
+    }
+
     return (
         <div className="app-home">
             <ReactVisualEditor 
                 config={visualConfig} 
                 value={editorValue} 
                 formData={formData}
+                customProps={customProps}
                 onFormDataChange={setFormData}
                 onChange={setEditorValue}
             ></ReactVisualEditor>

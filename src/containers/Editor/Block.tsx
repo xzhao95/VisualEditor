@@ -7,6 +7,7 @@ export const Block:React.FC<{
     block: EditorBlock,
     config: EditorConfig,
     formData: any,
+    customProps: Record<string, Record<string, any>>
     onFormDataChange: (val: any) => void
     onMouseDown: (e:React.MouseEvent<HTMLDivElement>)=>void,
     onContextMenu: (e:React.MouseEvent<HTMLElement>) => void
@@ -73,7 +74,8 @@ export const Block:React.FC<{
                     }
                 }
                 return prev
-            }, {} as Record<string, {value: any, onChange: (val:any) => void}>)
+            }, {} as Record<string, {value: any, onChange: (val:any) => void}>),
+            custom: !props.block.slotName || !props.customProps ? {} : (props.customProps[props.block.slotName] || {})
         });
     }
 
