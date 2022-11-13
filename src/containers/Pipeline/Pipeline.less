@@ -1,0 +1,141 @@
+.pipeline {
+    display: flex;
+    .stage-item {
+        margin-left: 80px;
+        &:first-of-type {
+            margin-left: 0;
+        }
+        &:last-of-type {
+            .job-item {
+                &::after {
+                    display: none;
+                }
+                .job-line-after {
+                    display: none;
+                }
+            }
+        }
+        .stage-item-name {
+            font-size: 18px;
+            font-weight: bold;
+        }
+        
+        .job-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            width: 180px;
+            line-height: 20px;
+            padding: 10px;
+            margin-top: 20px;
+            border: 1px solid #eeeeee;
+            border-radius: 40px;
+            font-size: 15px;
+            color: #666666;
+
+            &:nth-of-type(2){
+                &::after {
+                    content: "";
+                    position: absolute;
+                    right: -80px;
+                    left: 100%;
+                    top: 50%;
+                    height: 2px;
+                    background: #eeeeee;
+                }
+                .job-line-before, .job-line-after {
+                    display: none;
+                }
+            }
+            &:nth-of-type(3){
+                .job-line-before {
+                    top: -27px;
+                    bottom: 35px;
+                    &::before {
+                        content: "";
+                        position: absolute;
+                        left: -13px;
+                        top: -15px;
+                        border-radius: 0 15px 0 0;
+                        border-top: 2px solid #eee;
+                        border-right: 2px solid #eee;
+                        display: inline-block;
+                        width: 15px;
+                        height: 15px;
+                    }
+                }
+                .job-line-after {
+                    top: -27px;
+                    bottom: 35px;
+                    &::before {
+                        content: "";
+                        position: absolute;
+                        right: -13px;
+                        top: -15px;
+                        border-radius: 15px 0 0 0;
+                        border-top: 2px solid #eee;
+                        border-left: 2px solid #eee;
+                        display: inline-block;
+                        width: 15px;
+                        height: 15px;
+                    }
+                }
+            }
+            
+            .iconfont {
+                margin-right: 5px;
+                font-size: 20px;
+            }
+            .icon-success {
+                color: #419456;
+            }
+            .icon-fail {
+                color: #f11212
+            }
+            .job-time {
+                float: right;
+            }
+            .job-line-before {
+                position: absolute;
+                top: -57px;
+                bottom: 35px;
+                left: -15px;
+                width: 2px;
+                background: #eeeeee;
+                &::after {
+                    content: "";
+                    position: absolute;
+                    right: -13px;
+                    bottom: -15px;
+                    border-radius: 0 0 0 15px;
+                    border-bottom: 2px solid #eee;
+                    border-left: 2px solid #eee;
+                    display: inline-block;
+                    width: 15px;
+                    height: 15px;
+                }
+            }
+            .job-line-after {
+                position: absolute;
+                top: -57px;
+                bottom: 35px;
+                right: -15px;
+                width: 2px;
+                background: #eeeeee;
+                &::after {
+                    content: "";
+                    position: absolute;
+                    left: -13px;
+                    bottom: -15px;
+                    border-radius: 0 0 15px 0;
+                    border-bottom: 2px solid #eee;
+                    border-right: 2px solid #eee;
+                    display: inline-block;
+                    width: 15px;
+                    height: 15px;
+                }
+            }
+        }
+    }
+}
